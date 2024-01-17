@@ -3,7 +3,7 @@ All of the code for pika-zoo was written based on https://github.com/gorisanson/
 """
 from typing import List, Dict
 
-from rand import rand
+from .rand import rand
 
 # ground width
 GROUND_WIDTH: int = 432
