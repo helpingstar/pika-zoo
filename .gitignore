@@ -1,6 +1,6 @@
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,python
-
+test.py
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -193,3 +193,5 @@ pyrightconfig.json
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,python
+
+poetry.lock
