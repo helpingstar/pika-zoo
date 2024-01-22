@@ -2,8 +2,10 @@
 All of the code for pika-zoo was written based on https://github.com/gorisanson/pikachu-volleyball
 """
 from typing import List, Dict
-
+from gymnasium.spaces import MultiBinary
 from .rand import rand
+import numpy as np
+from numpy.typing import NDArray
 
 # ground width
 GROUND_WIDTH: int = 432
@@ -33,7 +35,11 @@ INFINITE_LOOP_LIMIT: int = 1000
 
 
 class PikaUserInput:
-    """Class representing user input (from keyboard or joystick, whatever)"""
+    """
+    Class representing user input (from keyboard or joystick, whatever)
+    hs) This class operates similarly to the `PikaKeyboard` in the original code.
+        This is because the current environment does not accept keyboard input.
+    """
 
     def __init__(self) -> None:
         # 0: no horizontal-direction input, -1: left-direction input, 1: right-direction input
@@ -42,7 +48,57 @@ class PikaUserInput:
         self.y_direction: int = 0
         # 0: auto-repeated or no power hit input, 1: not auto-repeated power hit input
         self.power_hit: int = 0
+        
+        self.power_hit_key_is_down_previous = False
+        self.left_key = False
+        self.right_key = False
+        self.up_key = False
+        self.down_key = False
+        self.power_hit_key = False
+        self.down_right_key = False
 
+    def get_input(self, action: NDArray[np.int8]) -> None:
+        """
+        This method does not process keyboard inputs; 
+        instead, it accepts a list of actions.
+        This operates similarly to the `getInput()` method of the `PikaKeyboard` class in the original code.
+        [left, right, up, down, powerHit, downRight]
+        Args:
+            action (NDArray[np.int8]): Whether each key is pressed.
+        """
+        # if player_2
+        if action.shape[0] < 6:
+            self.down_right_key = None
+        else:
+            self.down_right_key = bool(action[5])
+        
+        self.left_key = bool(action[0])
+        self.right_key = bool(action[1])
+        self.up_key = bool(action[2])
+        self.down_key = bool(action[3])
+        self.power_hit_key = bool(action[4])
+        
+        if (self.left_key):
+            self.x_direction = -1
+        elif self.right_key or (self.down_right_key is not None and self.down_right_key):
+            self.x_direction = 1
+        else:
+            self.x_direction = 0
+        
+        if self.up_key:
+            self.y_direction = -1
+        elif self.down_key or (self.down_right_key is not None and self.down_right_key):
+            self.y_direction = 1
+        else:
+            self.y_direction = 0
+        
+        is_down = self.power_hit_key
+        if (not self.power_hit_key_is_down_previous and is_down):
+            self.power_hit = 1
+        else:
+            self.power_hit = 0
+        self.power_hit_key_is_down_previous = True
+        
 
 class PikaPhysics:
     """Class representing a pack of physical objects i.e. players and ball
