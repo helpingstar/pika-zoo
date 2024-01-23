@@ -3,7 +3,7 @@ import gymnasium
 import numpy as np
 from gymnasium import spaces
 from pettingzoo import ParallelEnv
-from .physics import PikaPhysics, PikaUserInput, GROUND_HALF_WIDTH, GROUND_WIDTH, PLAYER_HALF_LENGTH, PLAYER_TOUCHING_GROUND_Y_COORD, BALL_RADIUS, BALL_TOUCHING_GROUND_Y_COORD
+from .physics import PikaPhysics, PikaUserInput, Player, Ball, GROUND_HALF_WIDTH, GROUND_WIDTH, PLAYER_HALF_LENGTH, PLAYER_TOUCHING_GROUND_Y_COORD, BALL_RADIUS, BALL_TOUCHING_GROUND_Y_COORD
 from typing import List, Dict
 
 def env(**kwargs):
@@ -25,7 +25,7 @@ class raw_env(ParallelEnv):
             self.possible_agents[0]: spaces.MultiBinary(6),
             self.possible_agents[1]: spaces.MultiBinary(5),
         }
-        self.physics = PikaPhysics(True, True)
+        self.physics = PikaPhysics(False, False)
         self.keyboard_array: List[PikaUserInput] = [PikaUserInput(), PikaUserInput()]
         # [0] for player 1 score, [1] for player 2 score
         self.scores: List[int] = [0, 0]
@@ -59,8 +59,9 @@ class raw_env(ParallelEnv):
         
         # TODO : render player, ball, score, cloud, wave
         # TODO : audio play
-        
-        # TODO : return
+        observations = self._get_obs()
+        infos = self._get_infos()
+        return observations, infos
 
     def step(self, actions):
         for i, agent in enumerate(self.agents):
@@ -71,7 +72,7 @@ class raw_env(ParallelEnv):
         # TODO : audio play
         # TODO : render player, ball, clouds, wave
         
-        if is_ball_touching_ground and self.round_ended and self.game_ended:
+        if is_ball_touching_ground and not self.round_ended and not self.game_ended:
             if self.physics.ball.punch_effect_x < GROUND_HALF_WIDTH:
                 self.is_player2_serve = True
                 self.scores[1] += 1
@@ -92,15 +93,12 @@ class raw_env(ParallelEnv):
                     self.physics.player2.gameEnded = True
             # TODO : render score
             self.round_ended = True
-        
-        # TODO if is_powerhit else
-        
-        # TODO
-        observations = None
-        rewards = None
-        terminations = None
-        truncations = None
-        infos = None
+
+        observations = self._get_obs()
+        rewards = {self.agents[0]: int(self.is_player2_serve), self.agents[1]: int(self.is_player2_serve)}
+        terminations = {agent: self.game_ended for agent in self.agents}
+        truncations = {agent: False for agent in self.agents}
+        infos = self._get_infos()
         
         return observations, rewards, terminations, truncations, infos
         
@@ -109,19 +107,58 @@ class raw_env(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
+        # Player1 : x, y, y_velocity, lying_down_duration_left, is_collision_with_ball_happened, state
+        # Player2 : x, y, y_velocity, lying_down_duration_left, is_collision_with_ball_happened, state
+        # Ball    : x, y, previous_x, previous_y, previous_previous_x, previous_previous_y, x_velocity, y_velocity, is_power_hit
         # hs) 108 : The maximum height reachable by the player.
-        return spaces.Dict({
-            self.possible_agents[0]: {
-                "position" : spaces.Box(low=np.array([PLAYER_HALF_LENGTH, 108]), high=np.array([GROUND_HALF_WIDTH - PLAYER_HALF_LENGTH, PLAYER_TOUCHING_GROUND_Y_COORD])),
-                "is_diving": spaces.Discrete(2)},
-            self.possible_agents[1]: {
-                "position" : spaces.Box(low=np.array([GROUND_HALF_WIDTH + PLAYER_HALF_LENGTH, 108]), high=np.array([GROUND_WIDTH - PLAYER_HALF_LENGTH, PLAYER_TOUCHING_GROUND_Y_COORD])),
-                "is_diving": spaces.Discrete(2)},
-            "ball": {
-                "origin" : spaces.Box(low=np.array([BALL_RADIUS, 0]), high=np.array([GROUND_WIDTH, BALL_TOUCHING_GROUND_Y_COORD])),
-                "hyper" : spaces.Box(low=np.array([BALL_RADIUS, 0]), high=np.array([GROUND_WIDTH, BALL_TOUCHING_GROUND_Y_COORD])),
-                "trail" : spaces.Box(low=np.array([BALL_RADIUS, 0]), high=np.array([GROUND_WIDTH, BALL_TOUCHING_GROUND_Y_COORD]))
-            }})
+        return spaces.Box(low=np.array([PLAYER_HALF_LENGTH, 108, -15, -2, 0, 0, 
+                                 PLAYER_HALF_LENGTH, 108, -15, -2, 0, 0, 
+                                 BALL_RADIUS, 0, BALL_RADIUS, 0, BALL_RADIUS, 0, -20, -123, 0]),
+                   high=np.array([GROUND_HALF_WIDTH - PLAYER_HALF_LENGTH, PLAYER_TOUCHING_GROUND_Y_COORD, 16, 3, 1, 6,
+                                  GROUND_HALF_WIDTH - PLAYER_HALF_LENGTH, PLAYER_TOUCHING_GROUND_Y_COORD, 16, 3, 1, 6,
+                                  GROUND_WIDTH, BALL_TOUCHING_GROUND_Y_COORD, GROUND_WIDTH, BALL_TOUCHING_GROUND_Y_COORD, GROUND_WIDTH, BALL_TOUCHING_GROUND_Y_COORD, 20, 124, 1]), 
+                   shape=(21,),
+                   dtype=np.int32)
 
     def action_space(self, agent):
         return self.action_spaces[agent]
+
+    def _get_infos(self):
+        return {agent: {} for agent in self.agents}
+    
+    def _get_obs(self):
+        obs1 = np.array(self._get_player_obs(self.agents[0]) 
+                        + self._get_player_obs(self.agents[1])
+                        + self._get_ball_obs())
+        obs2 = obs1.copy()
+        
+        return {self.agents[0]: obs1, self.agents[1]: obs2}
+    
+    def _get_player_obs(self, agent: str):
+        player: Player = None
+        if agent == self.agents[0]:
+            player = self.physics.player1
+        else:
+            player = self.physics.player2
+        
+        x = player.x
+        y = player.y
+        y_velocity = player.y_velocity
+        lying_down_duration_left = player.lying_down_duration_left
+        is_collision_with_ball_happened = int(player.is_collision_with_ball_happened)
+        state = player.state
+        return [x, y, y_velocity, lying_down_duration_left, is_collision_with_ball_happened, state]
+        
+        
+    def _get_ball_obs(self):
+        ball: Ball = self.physics.ball
+        x = ball.x
+        y = ball.y
+        previous_x = ball.previous_x
+        previous_y = ball.previous_y
+        previous_previous_x = ball.previous_previous_x
+        previous_previous_y = ball.previous_previous_y
+        x_velocity = ball.x_velocity
+        y_velocity = ball.y_velocity
+        is_power_hit = ball.is_power_hit
+        return [x, y, previous_x, previous_y, previous_previous_x, previous_previous_y, x_velocity, y_velocity, is_power_hit]
