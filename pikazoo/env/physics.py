@@ -316,7 +316,7 @@ def physics_engine(
         )
 
         if is_happened:
-            if not player.is_collision_between_ball_and_player_happened:
+            if not player.is_collision_with_ball_happened:
                 process_collision_between_ball_and_player(
                     ball, player.x, user_input_array[i], player.state
                 )
@@ -882,7 +882,7 @@ def expected_landing_point_x_when_power_hit(
 
         copy_ball["y"] = copy_ball["y"] + copy_ball["y_velocity"]
         if (
-            copy_ball.y > BALL_TOUCHING_GROUND_Y_COORD
+            copy_ball["y"] > BALL_TOUCHING_GROUND_Y_COORD
             or loop_counter >= INFINITE_LOOP_LIMIT
         ):
             return copy_ball["x"]
