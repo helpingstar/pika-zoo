@@ -132,6 +132,7 @@ class raw_env(ParallelEnv):
             self.physics.player1.initialize_for_new_round()
             self.physics.player2.initialize_for_new_round()
             self.physics.ball.initialize_for_new_round(self.is_player2_serve)
+            self.round_ended = False
 
         observations = self._get_obs()
         rewards = {self.agents[0]: int(self.is_player2_serve), self.agents[1]: int(self.is_player2_serve)}
