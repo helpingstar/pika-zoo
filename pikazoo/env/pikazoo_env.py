@@ -5,6 +5,7 @@ from gymnasium import spaces
 from gymnasium.utils import seeding
 from pettingzoo import ParallelEnv
 from .physics import PikaPhysics, PikaUserInput, Player, Ball, GROUND_HALF_WIDTH, GROUND_WIDTH, PLAYER_HALF_LENGTH, PLAYER_TOUCHING_GROUND_Y_COORD, BALL_RADIUS, BALL_TOUCHING_GROUND_Y_COORD
+from .cloud_and_wave import Cloud, Wave, cloud_and_wave_engine
 from typing import List, Dict
 import pygame
 import os
@@ -27,11 +28,37 @@ def blit_center(screen, source, dest):
     y = dest[1] - source.get_height() // 2
     screen.blit(source, (x, y))
 
+
+def get_frame_number_for_player_animated_sprite(state: int, frame_number: int) -> int:
+    """
+    hs) To make the implementation easier, I put the original function that was in view.js into the env.py file 
+    and gave it the same function name, even though pika-zoo doesn't use animated sprites.
+    
+    Get frame number for player animated sprite corresponds to the player state
+    number of frames for state 0, state 1 and state 2 is 5 for each.
+    number of frames for state 3 is 2.
+    number of frames for state 4 is 1.
+    number of frames for state 5, state 6 is 5 for each.
+    
+    Args:
+        state (int): player state
+        frame_number (int): player frame number
+
+    Returns:
+        int: index of sprite
+    """
+    if state < 4:
+        return 5 * state + frame_number
+    elif state == 4:
+        return 17 + frame_number
+    elif state > 4:
+        return 18 + 5 * (state - 5) + frame_number
+
 class raw_env(ParallelEnv):
     metadata = {
         "render_modes": ["human", "rgb_array"],
         "name": "pikazoo_v0",
-        "render_fps": 25,
+        "render_fps": 20,
     }
 
     def __init__(self, render_mode=None):
@@ -61,7 +88,8 @@ class raw_env(ParallelEnv):
         self.screen = None
         
         # Game Constants
-        self._seed
+        self._seed()
+        
         
         if self.render_mode == "human":
             self.clock = pygame.time.Clock()
@@ -88,8 +116,12 @@ class raw_env(ParallelEnv):
         self.physics.player2.initialize_for_new_round()
         self.physics.ball.initialize_for_new_round(self.is_player2_serve)
         
-        # TODO : render player, ball, score, cloud, wave
+        # TODO : render player, ball
         # TODO : audio play
+        
+        if self.render_mode == "human":
+            self.render()
+        
         observations = self._get_obs()
         infos = self._get_infos()
         return observations, infos
@@ -101,7 +133,7 @@ class raw_env(ParallelEnv):
         is_ball_touching_ground: bool = self.physics.run_engine_for_next_frame(self.keyboard_array)
         
         # TODO : audio play
-        # TODO : render player, ball, clouds, wave
+        # TODO : render player, ball
         
         if is_ball_touching_ground and not self.round_ended and not self.game_ended:
             if self.physics.ball.punch_effect_x < GROUND_HALF_WIDTH:
@@ -125,40 +157,71 @@ class raw_env(ParallelEnv):
 
             self.round_ended = True
         
-        if self.render_mode == "human":
-            self.render()
-        
+
+        # TODO : where...
         if self.round_ended and not self.game_ended:
             self.physics.player1.initialize_for_new_round()
             self.physics.player2.initialize_for_new_round()
             self.physics.ball.initialize_for_new_round(self.is_player2_serve)
             self.round_ended = False
-
+        
+        if self.render_mode == "human":
+            self.render()
+        
         observations = self._get_obs()
         rewards = {self.agents[0]: int(self.is_player2_serve), self.agents[1]: int(self.is_player2_serve)}
         terminations = {agent: self.game_ended for agent in self.agents}
         truncations = {agent: False for agent in self.agents}
         infos = self._get_infos()
         
+        if any(terminations.values()) or all(truncations.values()):
+            self.agents = []
+        
         return observations, rewards, terminations, truncations, infos
-
+    
     def draw(self):
         self.draw_background()
-        self.draw_player_and_ball()
+        self.draw_clouds_and_wave()
+        self.draw_player()
+        self.draw_ball()
         self.draw_scores_to_score_boards()
 
-    
-    def draw_player_and_ball(self):
-        ball: Ball = self.physics.ball
+    def draw_player(self):
         p1: Player = self.physics.player1
         p2: Player = self.physics.player2
-        blit_center(self.screen, self.ball_0, (ball.x, ball.y))
-        blit_center(self.screen, self.pikachu_0_0, (p1.x, p1.y))
-        blit_center(self.screen, self.pikachu_0_0, (p2.x, p2.y))
         
+        p1_sprite_idx = get_frame_number_for_player_animated_sprite(p1.state, p1.frame_number)
+        p2_sprite_idx = get_frame_number_for_player_animated_sprite(p2.state, p2.frame_number)
+        p1_xflip = (p1.state == 3 or p1.state == 4) and p1.diving_direction == -1
+        p2_xflip = not ((p1.state == 3 or p1.state == 4) and p1.diving_direction == 1)
+        if p1_xflip:
+            _p1_sprite = pygame.transform.flip(self.pikachu[p1_sprite_idx], True, False)
+        else:
+            _p1_sprite = self.pikachu[p1_sprite_idx]
+        
+        if p2_xflip:
+            _p2_sprite = pygame.transform.flip(self.pikachu[p2_sprite_idx], True, False)
+        else:
+            _p2_sprite = self.pikachu[p2_sprite_idx]
+        blit_center(self.screen, _p1_sprite, (p1.x, p1.y))
+        blit_center(self.screen, _p2_sprite, (p2.x, p2.y))
+        
+        blit_center(self.screen, self.shadow, (p1.x, 273))
+        blit_center(self.screen, self.shadow, (p2.x, 273))
+        
+        
+    def draw_ball(self):
+        ball: Ball = self.physics.ball
+        blit_center(self.screen, self.ball[ball.rotation], (ball.x, ball.y))
+        blit_center(self.screen, self.shadow, (ball.x, 273))
         if ball.is_power_hit:
             blit_center(self.screen, self.ball_hyper, (ball.previous_x, ball.previous_y))
             blit_center(self.screen, self.ball_trail, (ball.previous_previous_x, ball.previous_previous_y))
+        
+        if ball.punch_effect_radius > 0:
+            ball.punch_effect_radius -= 2
+            scaled_ball_punch = pygame.transform.scale(self.ball_punch, (2 * ball.punch_effect_radius, 2 * ball.punch_effect_radius))
+            blit_center(self.screen, scaled_ball_punch, (ball.punch_effect_x, ball.punch_effect_y))
             
     def draw_background(self):
         # sky
@@ -201,6 +264,26 @@ class raw_env(ParallelEnv):
             self.screen.blit(self.number[1], (432 - 32 - 32 - 14, 10))
         self.screen.blit(self.number[self.scores[1] % 10], (432 - 32 - 32 - 14 + 32, 10))
         
+    def draw_clouds_and_wave(self):
+        cloud_array = self.cloud_array
+        wave = self.wave_
+        
+        cloud_and_wave_engine(cloud_array, wave, self.np_random)
+        
+        for i in range(self.NUM_OF_CLOUDS):
+            cloud = cloud_array[i]
+            x = cloud.sprite_top_left_point_x
+            y = cloud.sprite_top_left_point_y
+            w = cloud.sprite_width
+            h = cloud.sprite_height
+            scaled_cloud = pygame.transform.scale(self.cloud, (w, h))
+            self.screen.blit(scaled_cloud, (x, y))
+        
+        for i in range(432 // 16):
+            y = wave.y_coords[i]
+            self.screen.blit(self.wave, (i*16, y))
+        
+
     def render(self):
         if self.render_mode is None:
             gymnasium.logger.warn(
@@ -235,16 +318,23 @@ class raw_env(ParallelEnv):
         if self.screen is not None:
             pygame.quit()
             self.screen = None
-        
+    
+    # rename to self.*_sprite
     def get_all_image(self):
-        self.ball_0 = get_image(os.path.join("img", "ball_0.png"))
-        self.ball_1 = get_image(os.path.join("img", "ball_1.png"))
-        self.ball_2 = get_image(os.path.join("img", "ball_2.png"))
-        self.ball_3 = get_image(os.path.join("img", "ball_3.png"))
-        self.ball_4 = get_image(os.path.join("img", "ball_4.png"))
+        self.NUM_OF_CLOUDS = 10
+        
         self.ball_hyper = get_image(os.path.join("img", "ball_hyper.png"))
         self.ball_punch = get_image(os.path.join("img", "ball_punch.png"))
         self.ball_trail = get_image(os.path.join("img", "ball_trail.png"))
+        
+        self.ball = (get_image(os.path.join("img", "ball_0.png")),
+            get_image(os.path.join("img", "ball_1.png")),
+            get_image(os.path.join("img", "ball_2.png")),
+            get_image(os.path.join("img", "ball_3.png")),
+            get_image(os.path.join("img", "ball_4.png")),
+            self.ball_hyper
+        )
+        
         self.black = get_image(os.path.join("img", "black.png"))
         self.cloud = get_image(os.path.join("img", "cloud.png"))
         self.fight = get_image(os.path.join("img", "fight.png"))
@@ -260,43 +350,46 @@ class raw_env(ParallelEnv):
         self.net_pillar = get_image(os.path.join("img", "net_pillar.png"))
         self.net_pillar_top = get_image(os.path.join("img", "net_pillar_top.png"))
         self.number = (get_image(os.path.join("img", "number_0.png")),
-        get_image(os.path.join("img", "number_1.png")),
-        get_image(os.path.join("img", "number_2.png")),
-        get_image(os.path.join("img", "number_3.png")),
-        get_image(os.path.join("img", "number_4.png")),
-        get_image(os.path.join("img", "number_5.png")),
-        get_image(os.path.join("img", "number_6.png")),
-        get_image(os.path.join("img", "number_7.png")),
-        get_image(os.path.join("img", "number_8.png")),
-        get_image(os.path.join("img", "number_9.png")))
-        self.pikachu_0_0 = get_image(os.path.join("img", "pikachu_0_0.png"))
-        self.pikachu_0_1 = get_image(os.path.join("img", "pikachu_0_1.png"))
-        self.pikachu_0_2 = get_image(os.path.join("img", "pikachu_0_2.png"))
-        self.pikachu_0_3 = get_image(os.path.join("img", "pikachu_0_3.png"))
-        self.pikachu_0_4 = get_image(os.path.join("img", "pikachu_0_4.png"))
-        self.pikachu_1_0 = get_image(os.path.join("img", "pikachu_1_0.png"))
-        self.pikachu_1_1 = get_image(os.path.join("img", "pikachu_1_1.png"))
-        self.pikachu_1_2 = get_image(os.path.join("img", "pikachu_1_2.png"))
-        self.pikachu_1_3 = get_image(os.path.join("img", "pikachu_1_3.png"))
-        self.pikachu_1_4 = get_image(os.path.join("img", "pikachu_1_4.png"))
-        self.pikachu_2_0 = get_image(os.path.join("img", "pikachu_2_0.png"))
-        self.pikachu_2_1 = get_image(os.path.join("img", "pikachu_2_1.png"))
-        self.pikachu_2_2 = get_image(os.path.join("img", "pikachu_2_2.png"))
-        self.pikachu_2_3 = get_image(os.path.join("img", "pikachu_2_3.png"))
-        self.pikachu_2_4 = get_image(os.path.join("img", "pikachu_2_4.png"))
-        self.pikachu_3_0 = get_image(os.path.join("img", "pikachu_3_0.png"))
-        self.pikachu_3_1 = get_image(os.path.join("img", "pikachu_3_1.png"))
-        self.pikachu_4_0 = get_image(os.path.join("img", "pikachu_4_0.png"))
-        self.pikachu_5_0 = get_image(os.path.join("img", "pikachu_5_0.png"))
-        self.pikachu_5_1 = get_image(os.path.join("img", "pikachu_5_1.png"))
-        self.pikachu_5_2 = get_image(os.path.join("img", "pikachu_5_2.png"))
-        self.pikachu_5_3 = get_image(os.path.join("img", "pikachu_5_3.png"))
-        self.pikachu_5_4 = get_image(os.path.join("img", "pikachu_5_4.png"))
-        self.pikachu_6_0 = get_image(os.path.join("img", "pikachu_6_0.png"))
-        self.pikachu_6_1 = get_image(os.path.join("img", "pikachu_6_1.png"))
-        self.pikachu_6_2 = get_image(os.path.join("img", "pikachu_6_2.png"))
-        self.pikachu_6_3 = get_image(os.path.join("img", "pikachu_6_3.png"))
-        self.pikachu_6_4 = get_image(os.path.join("img", "pikachu_6_4.png"))
+            get_image(os.path.join("img", "number_1.png")),
+            get_image(os.path.join("img", "number_2.png")),
+            get_image(os.path.join("img", "number_3.png")),
+            get_image(os.path.join("img", "number_4.png")),
+            get_image(os.path.join("img", "number_5.png")),
+            get_image(os.path.join("img", "number_6.png")),
+            get_image(os.path.join("img", "number_7.png")),
+            get_image(os.path.join("img", "number_8.png")),
+            get_image(os.path.join("img", "number_9.png"))
+        )
+        self.pikachu = (
+            get_image(os.path.join("img", "pikachu_0_0.png")),
+            get_image(os.path.join("img", "pikachu_0_1.png")),
+            get_image(os.path.join("img", "pikachu_0_2.png")),
+            get_image(os.path.join("img", "pikachu_0_3.png")),
+            get_image(os.path.join("img", "pikachu_0_4.png")),
+            get_image(os.path.join("img", "pikachu_1_0.png")),
+            get_image(os.path.join("img", "pikachu_1_1.png")),
+            get_image(os.path.join("img", "pikachu_1_2.png")),
+            get_image(os.path.join("img", "pikachu_1_3.png")),
+            get_image(os.path.join("img", "pikachu_1_4.png")),
+            get_image(os.path.join("img", "pikachu_2_0.png")),
+            get_image(os.path.join("img", "pikachu_2_1.png")),
+            get_image(os.path.join("img", "pikachu_2_2.png")),
+            get_image(os.path.join("img", "pikachu_2_3.png")),
+            get_image(os.path.join("img", "pikachu_2_4.png")),
+            get_image(os.path.join("img", "pikachu_3_0.png")),
+            get_image(os.path.join("img", "pikachu_3_1.png")),
+            get_image(os.path.join("img", "pikachu_4_0.png")),
+            get_image(os.path.join("img", "pikachu_5_0.png")),
+            get_image(os.path.join("img", "pikachu_5_1.png")),
+            get_image(os.path.join("img", "pikachu_5_2.png")),
+            get_image(os.path.join("img", "pikachu_5_3.png")),
+            get_image(os.path.join("img", "pikachu_5_4.png")),
+            get_image(os.path.join("img", "pikachu_6_0.png")),
+            get_image(os.path.join("img", "pikachu_6_1.png")),
+            get_image(os.path.join("img", "pikachu_6_2.png")),
+            get_image(os.path.join("img", "pikachu_6_3.png")),
+            get_image(os.path.join("img", "pikachu_6_4.png"))
+        )
         self.pikachu_volleyball = get_image(os.path.join("img", "pikachu_volleyball.png"))
         self.pokemon = get_image(os.path.join("img", "pokemon.png"))
         self.ready = get_image(os.path.join("img", "ready.png"))
@@ -307,7 +400,13 @@ class raw_env(ParallelEnv):
         self.wave = get_image(os.path.join("img", "wave.png"))
         self.with_computer = get_image(os.path.join("img", "with_computer.png"))
         self.with_friend = get_image(os.path.join("img", "with_friend.png"))
-    
+        
+        self.cloud_array: List[Cloud] = []
+        for i in range(self.NUM_OF_CLOUDS):
+            self.cloud_array.append(Cloud(self.np_random))
+        
+        self.wave_ = Wave()
+
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
         # Player1 : x, y, y_velocity, lying_down_duration_left, is_collision_with_ball_happened, state
