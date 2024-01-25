@@ -78,7 +78,7 @@ class PikaUserInput:
         self.down_key = bool(action[3])
         self.power_hit_key = bool(action[4])
         
-        if (self.left_key):
+        if self.left_key:
             self.x_direction = -1
         elif self.right_key or (self.down_right_key is not None and self.down_right_key):
             self.x_direction = 1
@@ -92,12 +92,12 @@ class PikaUserInput:
         else:
             self.y_direction = 0
         
-        is_down = self.power_hit_key
+        is_down: bool = self.power_hit_key
         if (not self.power_hit_key_is_down_previous and is_down):
             self.power_hit = 1
         else:
             self.power_hit = 0
-        self.power_hit_key_is_down_previous = True
+        self.power_hit_key_is_down_previous = is_down
         
 
 class PikaPhysics:
@@ -125,7 +125,7 @@ class PikaPhysics:
         Returns:
             bool: Is ball touching ground?
         """
-        is_ball_touching_ground = physics_engine(
+        is_ball_touching_ground: bool = physics_engine(
             self.player1, self.player2, self.ball, user_input_array
         )
         return is_ball_touching_ground
@@ -284,7 +284,7 @@ def physics_engine(
     Returns:
         bool: Is ball touching ground?
     """
-    is_ball_touching_ground = (
+    is_ball_touching_ground: bool = (
         process_collision_between_ball_and_world_and_set_ball_position(ball)
     )
 
@@ -311,7 +311,7 @@ def physics_engine(
         else:
             player = player2
 
-        is_happened = is_collision_between_ball_and_player_happened(
+        is_happened: bool = is_collision_between_ball_and_player_happened(
             ball, player.x, player.y
         )
 
@@ -379,7 +379,7 @@ def process_collision_between_ball_and_world_and_set_ball_position(ball: Ball) -
     ball.fine_rotation = future_fine_rotation
     ball.rotation = ball.fine_rotation // 10
 
-    future_ball_x = ball.x + ball.x_velocity
+    future_ball_x: int = ball.x + ball.x_velocity
 
     """
     If the center of ball would get out of left world bound or right world bound, bounce back.
@@ -445,6 +445,7 @@ def process_player_movement_and_set_player_position(
     if player.is_computer:
         let_computer_decide_user_input(player, ball, the_other_player, user_input)
 
+    # if player is lying down.. don't move
     if player.state == 4:
         player.lying_down_duration_left += -1
         if player.lying_down_duration_left < -1:
@@ -452,7 +453,7 @@ def process_player_movement_and_set_player_position(
         return
 
     # process x-direction movement
-    player_velocity_x = 0
+    player_velocity_x: int = 0
     if player.state < 5:
         if player.state < 3:
             player_velocity_x = user_input.x_direction * 6
@@ -460,7 +461,7 @@ def process_player_movement_and_set_player_position(
             # player.state == 3 i.e. player is diving.
             player_velocity_x = player.diving_direction * 8
 
-    future_player_x = player.x + player_velocity_x
+    future_player_x: int = player.x + player_velocity_x
     player.x = future_player_x
 
     # process player's x-direction world boundary
@@ -490,7 +491,7 @@ def process_player_movement_and_set_player_position(
         player.sound["chu"] = True
 
     # gravity
-    future_player_y = player.y + player.y_velocity
+    future_player_y: int = player.y + player.y_velocity
     player.y = future_player_y
     if future_player_y < PLAYER_TOUCHING_GROUND_Y_COORD:
         player.y_velocity += 1
@@ -537,7 +538,7 @@ def process_player_movement_and_set_player_position(
         player.delay_before_next_frame += 1
         if player.delay_before_next_frame > 3:
             player.delay_before_next_frame = 0
-            future_frame_number = (
+            future_frame_number: int = (
                 player.frame_number + player.normal_status_arm_swing_direction
             )
             if future_frame_number < 0 or future_frame_number > 4:
@@ -604,7 +605,7 @@ def process_collision_between_ball_and_player(
     if ball.x_velocity == 0:
         ball.x_velocity = (rand() % 3) - 1
 
-    ball_abs_y_velocity = abs(ball.y_velocity)
+    ball_abs_y_velocity: int = abs(ball.y_velocity)
     ball.y_velocity = -ball_abs_y_velocity
 
     if ball_abs_y_velocity < 15:
@@ -638,7 +639,7 @@ def calculate_expected_landing_point_x_for(ball: Ball):
     Args:
         ball (Ball): ball
     """
-    copy_ball = {
+    copy_ball: Dict[str, int] = {
         "x": ball.x,
         "y": ball.y,
         "x_velocity": ball.x_velocity,
@@ -648,7 +649,7 @@ def calculate_expected_landing_point_x_for(ball: Ball):
     while True:
         loop_counter += 1
 
-        future_copy_ball_x = copy_ball["x_velocity"] + copy_ball["x"]
+        future_copy_ball_x: int = copy_ball["x_velocity"] + copy_ball["x"]
         if future_copy_ball_x < BALL_RADIUS or future_copy_ball_x > GROUND_WIDTH:
             copy_ball["x_velocity"] = -copy_ball["x_velocity"]
         if copy_ball["y"] + copy_ball["y_velocity"] < 0:
@@ -704,7 +705,7 @@ def let_computer_decide_user_input(
     if abs(ball.x - player.x) > 100 and abs(
         ball.x_velocity < player.computer_boldness + 5
     ):
-        left_boundary = int(player.is_player2) * GROUND_HALF_WIDTH
+        left_boundary: int = int(player.is_player2) * GROUND_HALF_WIDTH
         if (
             ball.expected_landing_point_x <= left_boundary
             or ball.expected_landing_point_x
@@ -731,8 +732,8 @@ def let_computer_decide_user_input(
         ):
             user_input.y_direction = -1
 
-        left_boundary = int(player.is_player2) * GROUND_HALF_WIDTH
-        right_boundary = (int(player.is_player2) + 1) * GROUND_HALF_WIDTH
+        left_boundary: int = int(player.is_player2) * GROUND_HALF_WIDTH
+        right_boundary: int = (int(player.is_player2) + 1) * GROUND_HALF_WIDTH
 
         if (
             ball.expected_landing_point_x > left_boundary
@@ -755,7 +756,7 @@ def let_computer_decide_user_input(
             else:
                 user_input.x_direction = -1
         if abs(ball.x - player.x) < 48 and abs(ball.y - player.y) < 48:
-            will_input_power_hit = decide_whether_input_power_hit(
+            will_input_power_hit: bool = decide_whether_input_power_hit(
                 player, ball, the_other_player, user_input
             )
             if will_input_power_hit:
@@ -786,7 +787,7 @@ def decide_whether_input_power_hit(
     if rand() % 2 == 0:
         for x_direction in range(1, -1, -1):
             for y_direction in range(-1, 2, 1):
-                expected_landing_point_x = expected_landing_point_x_when_power_hit(
+                expected_landing_point_x: int = expected_landing_point_x_when_power_hit(
                     x_direction, y_direction, ball
                 )
                 if (
@@ -835,7 +836,7 @@ def expected_landing_point_x_when_power_hit(
     Returns:
         int: x coord of expected landing point when power hit the ball
     """
-    copy_ball = {
+    copy_ball: Dict[str, int] = {
         "x": ball.x,
         "y": ball.y,
         "x_velocity": ball.x_velocity,
@@ -851,7 +852,7 @@ def expected_landing_point_x_when_power_hit(
     while True:
         loop_counter += 1
 
-        future_copy_ball_x = copy_ball["x"] + copy_ball["x_velocity"]
+        future_copy_ball_x: int = copy_ball["x"] + copy_ball["x_velocity"]
         if future_copy_ball_x < BALL_RADIUS or future_copy_ball_x > GROUND_WIDTH:
             copy_ball["x_velocity"] = -copy_ball["x_velocity"]
         if copy_ball["y"] + copy_ball["y_velocity"] < 0:
