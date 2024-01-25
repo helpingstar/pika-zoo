@@ -6,15 +6,17 @@ hs) For multithreaded optimization and experimental reproducibility, I used a ge
 """
 import numpy as np
 from typing import List
+
+
 class Cloud:
-    """class represents a cloud
-    """
+    """class represents a cloud"""
+
     def __init__(self, np_random: np.random.Generator) -> None:
         self.top_left_point_x = -68 + (np_random.integers(0, 432 + 68))
         self.top_left_point_y = np_random.integers(0, 152)
         self.top_left_point_x_velocity = 1 + np_random.integers(0, 2)
         self.size_diff_turn_number = np_random.integers(0, 11)
-    
+
     @property
     def size_diff(self):
         return 5 - abs(self.size_diff_turn_number - 5)
@@ -37,8 +39,8 @@ class Cloud:
 
 
 class Wave:
-    """Class representing wave
-    """
+    """Class representing wave"""
+
     def __init__(self) -> None:
         self.vertical_coord = 0
         self.vertical_coord_velocity = 2
@@ -46,11 +48,14 @@ class Wave:
         for i in range(432 // 16):
             self.y_coords.append(314)
 
-def cloud_and_wave_engine(cloud_array: List[Cloud], wave: Wave, np_random: np.random.Generator):
+
+def cloud_and_wave_engine(
+    cloud_array: List[Cloud], wave: Wave, np_random: np.random.Generator
+):
     """Move clouds and wave
 
     Args:
-        cloud_array (List[Cloud]): cloud array 
+        cloud_array (List[Cloud]): cloud array
         wave (Wave): wave
         np_random (np.random.Generator): random number Generator, ex) `self.np_random`
     """
@@ -60,7 +65,9 @@ def cloud_and_wave_engine(cloud_array: List[Cloud], wave: Wave, np_random: np.ra
             cloud_array[i].top_left_point_x = -68
             cloud_array[i].top_left_point_y = np_random.integers(0, 152)
             cloud_array[i].top_left_point_x_velocity = 1 + np_random.integers(0, 2)
-        cloud_array[i].size_diff_turn_number = (cloud_array[i].size_diff_turn_number + 1) % 11
+        cloud_array[i].size_diff_turn_number = (
+            cloud_array[i].size_diff_turn_number + 1
+        ) % 11
 
     wave.vertical_coord += wave.vertical_coord_velocity
     if wave.vertical_coord > 32:

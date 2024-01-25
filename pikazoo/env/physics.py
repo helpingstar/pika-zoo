@@ -48,7 +48,7 @@ class PikaUserInput:
         self.y_direction: int = 0
         # 0: auto-repeated or no power hit input, 1: not auto-repeated power hit input
         self.power_hit: int = 0
-        
+
         self.power_hit_key_is_down_previous = False
         self.left_key = False
         self.right_key = False
@@ -59,7 +59,7 @@ class PikaUserInput:
 
     def get_input(self, action: NDArray[np.int8]) -> None:
         """
-        This method does not process keyboard inputs; 
+        This method does not process keyboard inputs;
         instead, it accepts a list of actions.
         This operates similarly to the `getInput()` method of the `PikaKeyboard` class in the original code.
         [left, right, up, down, powerHit, downRight]
@@ -71,34 +71,36 @@ class PikaUserInput:
             self.down_right_key = None
         else:
             self.down_right_key = bool(action[5])
-        
+
         self.left_key = bool(action[0])
         self.right_key = bool(action[1])
         self.up_key = bool(action[2])
         self.down_key = bool(action[3])
         self.power_hit_key = bool(action[4])
-        
+
         if self.left_key:
             self.x_direction = -1
-        elif self.right_key or (self.down_right_key is not None and self.down_right_key):
+        elif self.right_key or (
+            self.down_right_key is not None and self.down_right_key
+        ):
             self.x_direction = 1
         else:
             self.x_direction = 0
-        
+
         if self.up_key:
             self.y_direction = -1
         elif self.down_key or (self.down_right_key is not None and self.down_right_key):
             self.y_direction = 1
         else:
             self.y_direction = 0
-        
+
         is_down: bool = self.power_hit_key
-        if (not self.power_hit_key_is_down_previous and is_down):
+        if not self.power_hit_key_is_down_previous and is_down:
             self.power_hit = 1
         else:
             self.power_hit = 0
         self.power_hit_key_is_down_previous = is_down
-        
+
 
 class PikaPhysics:
     """Class representing a pack of physical objects i.e. players and ball
