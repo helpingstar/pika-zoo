@@ -474,7 +474,7 @@ class raw_env(ParallelEnv):
                     0,
                     BALL_RADIUS,
                     0,
-                    -np.inf,
+                    -20,
                     -np.inf,
                     0,
                 ]
@@ -499,7 +499,7 @@ class raw_env(ParallelEnv):
                     BALL_TOUCHING_GROUND_Y_COORD,
                     GROUND_WIDTH,
                     BALL_TOUCHING_GROUND_Y_COORD,
-                    np.inf,
+                    20,
                     np.inf,
                     1,
                 ]
