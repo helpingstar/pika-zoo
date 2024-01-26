@@ -2,8 +2,6 @@
 All of the code for pika-zoo was written based on https://github.com/gorisanson/pikachu-volleyball
 """
 from typing import List, Dict
-from gymnasium.spaces import MultiBinary
-from .rand import rand
 import numpy as np
 from numpy.typing import NDArray
 
@@ -107,16 +105,23 @@ class PikaPhysics:
     whose physical values are calculated and set by `physics_engine` function
     """
 
-    def __init__(self, is_player1_computer: bool, is_player2_computer: bool) -> None:
+    def __init__(
+        self,
+        is_player1_computer: bool,
+        is_player2_computer: bool,
+        np_random: np.random.Generator,
+    ) -> None:
         """Create a physics pack
 
         Args:
             is_player1_computer (bool): Is player on the left (player 1) controlled by computer?
             is_player2_computer (bool): Is player on the right (player 2) controlled by computer?
+            np_random (np.random.Generator): The environment-dependent np.random.generator
         """
-        self.player1 = Player(False, is_player1_computer)
-        self.player2 = Player(True, is_player2_computer)
+        self.player1 = Player(False, is_player1_computer, np_random)
+        self.player2 = Player(True, is_player2_computer, np_random)
         self.ball = Ball(False)
+        self.np_random = np_random
 
     def run_engine_for_next_frame(self, user_input_array: List[PikaUserInput]) -> bool:
         """run `physicsEngine` function with this physics object and user input
@@ -128,7 +133,7 @@ class PikaPhysics:
             bool: Is ball touching ground?
         """
         is_ball_touching_ground: bool = physics_engine(
-            self.player1, self.player2, self.ball, user_input_array
+            self.player1, self.player2, self.ball, user_input_array, self.np_random
         )
         return is_ball_touching_ground
 
@@ -136,17 +141,21 @@ class PikaPhysics:
 class Player:
     """Class representing a player"""
 
-    def __init__(self, is_player2: bool, is_computer: bool):
+    def __init__(
+        self, is_player2: bool, is_computer: bool, np_random: np.random.Generator
+    ):
         """create a player
 
         Args:
             is_player2 (bool): Is this player on the right side?
             is_computer (bool): Is this player controlled by computer?
+            np_random (np.random.Generator): The environment-dependent np.random.generator
         """
         # Is this player on the right side?
         self.is_player2: bool = is_player2
         # Is controlled by computer?
         self.is_computer: bool = is_computer
+        self.np_random = np_random
         self.initialize_for_new_round()
 
         # -1: left, 0: no diving, 1: right
@@ -209,7 +218,7 @@ class Player:
         and dives less.
         See the source code of the `let_computer_decide_user_input` function.
         """
-        self.computer_boldness: int = rand() % 5
+        self.computer_boldness: int = self.np_random.integers(0, 5)
 
 
 class Ball:
@@ -272,7 +281,11 @@ class Ball:
 
 
 def physics_engine(
-    player1: Player, player2: Player, ball: Ball, user_input_array: List[PikaUserInput]
+    player1: Player,
+    player2: Player,
+    ball: Ball,
+    user_input_array: List[PikaUserInput],
+    np_random: np.random.Generator,
 ) -> bool:
     """This is the Pikachu Volleyball physics engine!
     This physics engine calculates and set the physics values for the next frame.
@@ -282,6 +295,7 @@ def physics_engine(
         player2 (Player): player on the right side
         ball (Ball): ball
         user_input_array (List[PikaUserInput]): userInputArray[0]: user input for player 1, userInputArray[1]: user input for player 2
+        np_random (np.random.Generator): The environment-dependent np.random.generator
 
     Returns:
         bool: Is ball touching ground?
@@ -320,7 +334,7 @@ def physics_engine(
         if is_happened:
             if not player.is_collision_with_ball_happened:
                 process_collision_between_ball_and_player(
-                    ball, player.x, user_input_array[i], player.state
+                    ball, player.x, user_input_array[i], player.state, np_random
                 )
                 player.is_collision_with_ball_happened = True
         else:
@@ -578,7 +592,11 @@ def process_game_end_frame_for(player: Player):
 
 
 def process_collision_between_ball_and_player(
-    ball: Ball, player_x: int, user_input: PikaUserInput, player_state: int
+    ball: Ball,
+    player_x: int,
+    user_input: PikaUserInput,
+    player_state: int,
+    np_random: np.random.Generator,
 ):
     """Process collision between ball and player.
     This function only sets velocity of ball and expected landing point x of ball.
@@ -590,6 +608,7 @@ def process_collision_between_ball_and_player(
         player_x (int): player.x
         user_input (PikaUserInput): user_input
         player_state (int): player.state
+        np_random (np.random.Generator): The environment-dependent np.random.generator
     """
 
     """
@@ -605,7 +624,7 @@ def process_collision_between_ball_and_player(
 
     # If ball velocity x is 0, randomly choose one of -1, 0, 1.
     if ball.x_velocity == 0:
-        ball.x_velocity = (rand() % 3) - 1
+        ball.x_velocity = np_random.integers(0, 3) - 1
 
     ball_abs_y_velocity: int = abs(ball.y_velocity)
     ball.y_velocity = -ball_abs_y_velocity
@@ -685,7 +704,11 @@ def calculate_expected_landing_point_x_for(ball: Ball):
 
 
 def let_computer_decide_user_input(
-    player: Player, ball: Ball, the_other_player: Player, user_input: PikaUserInput
+    player: Player,
+    ball: Ball,
+    the_other_player: Player,
+    user_input: PikaUserInput,
+    np_random: np.random.Generator,
 ):
     """
     Computer controls its player by this function.
@@ -698,6 +721,7 @@ def let_computer_decide_user_input(
         ball (Ball): ball
         the_other_player (Player): The other player
         user_input (PikaUserInput): user input of the player whom computer controls
+        np_random (np.random.Generator): The environment-dependent np.random.generator
     """
     user_input.x_direction = 0
     user_input.y_direction = 0
@@ -721,8 +745,8 @@ def let_computer_decide_user_input(
             user_input.x_direction = 1
         else:
             user_input.x_direction = -1
-    elif rand() % 20 == 0:
-        player.computer_where_to_stand_by = rand() % 2
+    elif np_random.integers(0, 20) == 0:
+        player.computer_where_to_stand_by = np_random.integers(0, 2)
 
     if player.state == 0:
         if (
@@ -759,7 +783,7 @@ def let_computer_decide_user_input(
                 user_input.x_direction = -1
         if abs(ball.x - player.x) < 48 and abs(ball.y - player.y) < 48:
             will_input_power_hit: bool = decide_whether_input_power_hit(
-                player, ball, the_other_player, user_input
+                player, ball, the_other_player, user_input, np_random
             )
             if will_input_power_hit:
                 user_input.power_hit = 1
@@ -771,7 +795,11 @@ def let_computer_decide_user_input(
 
 
 def decide_whether_input_power_hit(
-    player: Player, ball: Ball, the_other_player: Player, user_input: PikaUserInput
+    player: Player,
+    ball: Ball,
+    the_other_player: Player,
+    user_input: PikaUserInput,
+    np_random: np.random.Generator,
 ) -> bool:
     """This function is called by `let_computer_decide_user_input`,
     and also sets x and y direction user input so that it participate in
@@ -782,11 +810,12 @@ def decide_whether_input_power_hit(
         ball (Ball): ball
         the_other_player (Player): The other rplayer
         user_input (PikaUserInput): user input for the player whom computer controls
+        np_random (np.random.Generator): The environment-dependent np.random.generator
 
     Returns:
         bool: Will input power hit?
     """
-    if rand() % 2 == 0:
+    if np_random.integers(0, 2) == 0:
         for x_direction in range(1, -1, -1):
             for y_direction in range(-1, 2, 1):
                 expected_landing_point_x: int = expected_landing_point_x_when_power_hit(

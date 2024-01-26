@@ -83,7 +83,9 @@ class raw_env(ParallelEnv):
             self.possible_agents[0]: spaces.MultiBinary(6),
             self.possible_agents[1]: spaces.MultiBinary(5),
         }
-        self.physics = PikaPhysics(False, False)
+        self._seed()
+
+        self.physics = PikaPhysics(False, False, self.np_random)
         self.keyboard_array: List[PikaUserInput] = [PikaUserInput(), PikaUserInput()]
         # [0] for player 1 score, [1] for player 2 score
         self.scores: List[int] = [0, 0]
@@ -102,7 +104,6 @@ class raw_env(ParallelEnv):
         self.render_mode = render_mode
         self.screen = None
 
-        # Game Constants
         self._seed()
 
         if self.render_mode == "human":
