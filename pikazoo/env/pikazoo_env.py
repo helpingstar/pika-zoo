@@ -214,7 +214,7 @@ class raw_env(ParallelEnv):
             p2.state, p2.frame_number
         )
         p1_xflip = (p1.state == 3 or p1.state == 4) and p1.diving_direction == -1
-        p2_xflip = not ((p1.state == 3 or p1.state == 4) and p1.diving_direction == 1)
+        p2_xflip = not ((p2.state == 3 or p2.state == 4) and p2.diving_direction == 1)
         if p1_xflip:
             _p1_sprite = pygame.transform.flip(self.pikachu[p1_sprite_idx], True, False)
         else:
