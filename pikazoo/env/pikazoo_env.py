@@ -487,7 +487,7 @@ class raw_env(ParallelEnv):
                     3,
                     1,
                     6,
-                    GROUND_HALF_WIDTH - PLAYER_HALF_LENGTH,
+                    GROUND_WIDTH - PLAYER_HALF_LENGTH,
                     PLAYER_TOUCHING_GROUND_Y_COORD,
                     16,
                     3,
