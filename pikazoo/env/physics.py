@@ -728,8 +728,9 @@ def let_computer_decide_user_input(
     user_input.power_hit = 0
 
     virtual_expected_landing_point_x = ball.expected_landing_point_x
-    if abs(ball.x - player.x) > 100 and abs(
-        ball.x_velocity < player.computer_boldness + 5
+    if (
+        abs(ball.x - player.x) > 100
+        and abs(ball.x_velocity) < player.computer_boldness + 5
     ):
         left_boundary: int = int(player.is_player2) * GROUND_HALF_WIDTH
         if (
@@ -754,7 +755,7 @@ def let_computer_decide_user_input(
             and abs(ball.x - player.x) < PLAYER_HALF_LENGTH
             and ball.y > -36
             and ball.y < 10 * player.computer_boldness + 84
-            and ball.y_velocity
+            and ball.y_velocity > 0
         ):
             user_input.y_direction = -1
 
@@ -826,9 +827,9 @@ def decide_whether_input_power_hit(
                     <= int(player.is_player2) * GROUND_HALF_WIDTH
                     or expected_landing_point_x
                     >= int(player.is_player2) * GROUND_WIDTH + GROUND_HALF_WIDTH
-                    and abs(expected_landing_point_x - the_other_player.x)
-                    > PLAYER_LENGTH
-                ):
+                ) and abs(
+                    expected_landing_point_x - the_other_player.x
+                ) > PLAYER_LENGTH:
                     user_input.x_direction = x_direction
                     user_input.y_direction = y_direction
                     return True
@@ -849,7 +850,7 @@ def decide_whether_input_power_hit(
                     user_input.x_direction = x_direction
                     user_input.y_direction = y_direction
                     return True
-    return True
+    return False
 
 
 def expected_landing_point_x_when_power_hit(
@@ -877,7 +878,7 @@ def expected_landing_point_x_when_power_hit(
         copy_ball["x_velocity"] = (abs(user_input_x_direction) + 1) * 10
     else:
         copy_ball["x_velocity"] = -(abs(user_input_x_direction) + 1) * 10
-    copy_ball["y_velocity"] = abs(copy_ball["y_velocity"] * user_input_y_direction * 2)
+    copy_ball["y_velocity"] = abs(copy_ball["y_velocity"]) * user_input_y_direction * 2
 
     loop_counter = 0
     while True:
