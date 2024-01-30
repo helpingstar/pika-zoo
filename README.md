@@ -7,6 +7,7 @@ You can play the game at the site below.
 * https://gorisanson.github.io/pikachu-volleyball/en/
 * P2P Online : https://gorisanson.github.io/pikachu-volleyball-p2p-online/en/
 
+https://github.com/helpingstar/pika-zoo/assets/54899900/b253555e-20bd-4449-bf34-130e0d8902fa
 
 | Import             | `from pikazoo import pikazoo_v0`   |
 |--------------------|----------------------------------|
