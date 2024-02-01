@@ -612,7 +612,7 @@ def process_collision_between_ball_and_player(
     """
 
     """
-    player_x is maybe pika's x position
+    player_x is pika's x position
     if collision occur,
     greater the x position difference between pika and ball,
     greater the x velocity of the ball
