@@ -99,7 +99,6 @@ class raw_env(ParallelEnv):
         self.is_player2_serve: bool = False
 
         # Game Status
-        # TODO : process about frames, ex) ball, player animation
         self.frames = 0
         self.render_mode = render_mode
         self.screen = None
@@ -129,7 +128,6 @@ class raw_env(ParallelEnv):
         self.physics.player2.initialize_for_new_round()
         self.physics.ball.initialize_for_new_round(self.is_player2_serve)
 
-        # TODO : render player, ball
         # TODO : audio play
 
         if self.render_mode == "human":
@@ -148,7 +146,6 @@ class raw_env(ParallelEnv):
         )
 
         # TODO : audio play
-        # TODO : render player, ball
 
         if is_ball_touching_ground and not self.round_ended and not self.game_ended:
             if self.physics.ball.punch_effect_x < GROUND_HALF_WIDTH:
