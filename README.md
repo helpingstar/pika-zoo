@@ -18,7 +18,7 @@ https://github.com/helpingstar/pika-zoo/assets/54899900/b253555e-20bd-4449-bf34-
 | Agents             | 2                                |
 | Action Shape       | player_1 : (6,), player_2 : (6,) |
 | Action Values      | 0 or 1                           |
-| Observation Shape  | (21,)                            |
+| Observation Shape  | (22,)                            |
 | Observation Values | [-inf,inf]                       |
 
 ## Action Space
@@ -57,6 +57,7 @@ https://github.com/helpingstar/pika-zoo/assets/54899900/b253555e-20bd-4449-bf34-
 | 18    | X Velocity of ball                           | -20 | 20  |
 | 19    | Y Velocity of ball                           | -inf | inf |
 | 20    | If the ball is in   POWER HIT status         | 0   | 1   |
+| 21    | Is player 2? (Whether you play on the right.)| 0   | 1   |
 
 I don't know exactly what the maximum and minimum values of the ball's y velocity are, so I used `inf`. The maximum and minimum values I observed are `-123` and `124`.
 

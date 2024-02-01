@@ -477,6 +477,7 @@ class raw_env(ParallelEnv):
                     -20,
                     -np.inf,
                     0,
+                    0,
                 ]
             ),
             high=np.array(
@@ -502,9 +503,10 @@ class raw_env(ParallelEnv):
                     20,
                     np.inf,
                     1,
+                    1,
                 ]
             ),
-            shape=(21,),
+            shape=(22,),
             dtype=np.int32,
         )
 
@@ -522,8 +524,10 @@ class raw_env(ParallelEnv):
             self._get_player_obs(self.agents[0])
             + self._get_player_obs(self.agents[1])
             + self._get_ball_obs()
+            + [0]  # is_player_2
         )
         obs2 = obs1.copy()
+        obs2[-1] = 1
 
         return {self.agents[0]: obs1, self.agents[1]: obs2}
 
