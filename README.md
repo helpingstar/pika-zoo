@@ -1,5 +1,10 @@
 # pika-zoo
 
+The original Pikachu Volleyball (対戦ぴかちゅ～　ﾋﾞｰﾁﾊﾞﾚｰ編) was developed by
+
+* 1997 (C) SACHI SOFT / SAWAYAKAN Programmers
+* 1997 (C) Satoshi Takenouchi
+
 **All of the code for pika-zoo was written based on [gorisanson/pikachu-volleyball](https://github.com/gorisanson/pikachu-volleyball).**
 
 You can play the game at the site below.
