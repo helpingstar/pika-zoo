@@ -138,6 +138,13 @@ class raw_env(ParallelEnv):
         return observations, infos
 
     def step(self, actions):
+        # TODO : where...
+        if self.round_ended and not self.game_ended:
+            self.physics.player1.initialize_for_new_round()
+            self.physics.player2.initialize_for_new_round()
+            self.physics.ball.initialize_for_new_round(self.is_player2_serve)
+            self.round_ended = False
+
         for i, agent in enumerate(self.agents):
             self.keyboard_array[i].get_input(actions[agent])
 
@@ -153,36 +160,38 @@ class raw_env(ParallelEnv):
                 self.scores[1] += 1
                 if self.scores[1] >= self.winning_score:
                     self.game_ended = True
-                    self.physics.player1.isWinner = False
-                    self.physics.player2.isWinner = True
-                    self.physics.player1.gameEnded = True
-                    self.physics.player2.gameEnded = True
+                    self.physics.player1.is_winner = False
+                    self.physics.player2.is_winner = True
+                    self.physics.player1.game_ended = True
+                    self.physics.player2.game_ended = True
             else:
                 self.is_player2_serve = False
                 self.scores[0] += 1
                 if self.scores[0] >= self.winning_score:
                     self.game_ended = True
-                    self.physics.player1.isWinner = True
-                    self.physics.player2.isWinner = False
-                    self.physics.player1.gameEnded = True
-                    self.physics.player2.gameEnded = True
+                    self.physics.player1.is_winner = True
+                    self.physics.player2.is_winner = False
+                    self.physics.player1.game_ended = True
+                    self.physics.player2.game_ended = True
 
             self.round_ended = True
-
-        # TODO : where...
-        if self.round_ended and not self.game_ended:
-            self.physics.player1.initialize_for_new_round()
-            self.physics.player2.initialize_for_new_round()
-            self.physics.ball.initialize_for_new_round(self.is_player2_serve)
-            self.round_ended = False
 
         if self.render_mode == "human":
             self.render()
 
         observations = self._get_obs()
+
+        if self.round_ended:
+            if self.is_player2_serve:
+                player1_reward = 1
+            else:
+                player1_reward = -1
+        else:
+            player1_reward = 0
+
         rewards = {
-            self.agents[0]: int(self.is_player2_serve),
-            self.agents[1]: int(self.is_player2_serve),
+            self.agents[0]: player1_reward,
+            self.agents[1]: -player1_reward,
         }
         terminations = {agent: self.game_ended for agent in self.agents}
         truncations = {agent: False for agent in self.agents}
