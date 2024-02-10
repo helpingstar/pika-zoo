@@ -458,8 +458,8 @@ class raw_env(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent=None):
-        # Player1 : x, y, y_velocity, lying_down_duration_left, is_collision_with_ball_happened, state
-        # Player2 : x, y, y_velocity, lying_down_duration_left, is_collision_with_ball_happened, state
+        # Player1 : x, y, y_velocity, diving_direction, lying_down_duration_left, is_collision_with_ball_happened, state
+        # Player2 : x, y, y_velocity, diving_direction, lying_down_duration_left, is_collision_with_ball_happened, state
         # Ball    : x, y, previous_x, previous_y, previous_previous_x, previous_previous_y, x_velocity, y_velocity, is_power_hit
         # hs) 108 : The maximum height reachable by the player.
         return spaces.Box(
@@ -468,13 +468,27 @@ class raw_env(ParallelEnv):
                     PLAYER_HALF_LENGTH,
                     108,
                     -15,
+                    -1,
                     -2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
                     0,
                     0,
                     GROUND_HALF_WIDTH + PLAYER_HALF_LENGTH,
                     108,
                     -15,
+                    -1,
                     -2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
                     0,
                     0,
                     BALL_RADIUS,
@@ -494,15 +508,29 @@ class raw_env(ParallelEnv):
                     GROUND_HALF_WIDTH - PLAYER_HALF_LENGTH,
                     PLAYER_TOUCHING_GROUND_Y_COORD,
                     16,
+                    1,
                     3,
                     1,
-                    6,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
                     GROUND_WIDTH - PLAYER_HALF_LENGTH,
                     PLAYER_TOUCHING_GROUND_Y_COORD,
                     16,
+                    1,
                     3,
                     1,
-                    6,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
                     GROUND_WIDTH,
                     BALL_TOUCHING_GROUND_Y_COORD,
                     GROUND_WIDTH,
@@ -515,7 +543,7 @@ class raw_env(ParallelEnv):
                     1,
                 ]
             ),
-            shape=(22,),
+            shape=(36,),
             dtype=np.int32,
         )
 
@@ -546,21 +574,16 @@ class raw_env(ParallelEnv):
             player = self.physics.player1
         else:
             player = self.physics.player2
-
-        x = player.x
-        y = player.y
-        y_velocity = player.y_velocity
-        lying_down_duration_left = player.lying_down_duration_left
-        is_collision_with_ball_happened = int(player.is_collision_with_ball_happened)
-        state = player.state
+        state = [0, 0, 0, 0, 0, 0, 0]
+        state[player.state] = 1
         return [
-            x,
-            y,
-            y_velocity,
-            lying_down_duration_left,
-            is_collision_with_ball_happened,
-            state,
-        ]
+            player.x,
+            player.y,
+            player.y_velocity,
+            player.diving_direction,
+            player.lying_down_duration_left,
+            int(player.is_collision_with_ball_happened),
+        ] + state
 
     def _get_ball_obs(self):
         ball: Ball = self.physics.ball
