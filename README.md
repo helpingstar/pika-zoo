@@ -14,17 +14,17 @@ You can play the game at the site below.
 
 https://github.com/helpingstar/pika-zoo/assets/54899900/b253555e-20bd-4449-bf34-130e0d8902fa
 
-| Import             | `from pikazoo import pikazoo_v0` |
-|--------------------|----------------------------------|
-| Actions            | Discrete                         |
-| Parallel API       | Yes                              |
-| Manual Control     | No                               |
-| Agents             | agents= ['player_1', 'player_2'] |
-| Agents             | 2                                |
-| Action Shape       | player_1 : (6,), player_2 : (6,) |
-| Action Values      | 0 or 1                           |
-| Observation Shape  | (22,)                            |
-| Observation Values | [-inf,inf]                       |
+| Import             | `from pikazoo import pikazoo_v0`         |
+|--------------------|------------------------------------------|
+| Actions            | Discrete                                 |
+| Parallel API       | Yes                                      |
+| Manual Control     | No                                       |
+| Agents             | agents= ['player_1', 'player_2']         |
+| Agents             | 2                                        |
+| Action Shape       | player_1 : (6,) or (5,), player_2 : (5,) |
+| Action Values      | 0 or 1                                   |
+| Observation Shape  | (36,)                                    |
+| Observation Values | [-inf,inf]                               |
 
 ## Action Space
 
@@ -79,5 +79,16 @@ https://github.com/helpingstar/pika-zoo/assets/54899900/b253555e-20bd-4449-bf34-
 | 35    | Is player 2? (Whether you play on the right.)| 0    | 1    |
 
 I don't know exactly what the maximum and minimum values of the ball's y velocity are, so I used `inf`. The maximum and minimum values I observed are `-123` and `124`.
+
+## Arguments
+
+```python
+env = pikazoo_v0.env(
+    use_f_key=False,
+)
+```
+
+* `use_f_key` : In the original game, the F key functions to press the down direction (V key) and the right direction key (G key) simultaneously. This is unnecessary from the perspective of reinforcement learning. Considering the symmetry of the game and for vectorizing the environment, it is advisable to set this option to `False`. When this option is set to `False`, the action_space of player1 changes from [`MultiBinary(6)`](https://gymnasium.farama.org/api/spaces/fundamental/#multibinary) to [`MultiBinary(5)`](https://gymnasium.farama.org/api/spaces/fundamental/#multibinary). Related information can be found in the link below.
+  * https://github.com/gorisanson/pikachu-volleyball/issues/3
 
 <!-- TODO: Install, Sample Code -->
