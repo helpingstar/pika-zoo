@@ -76,11 +76,13 @@ class raw_env(ParallelEnv):
         "render_fps": 20,
     }
 
-    def __init__(self, render_mode=None):
+    def __init__(self, use_f_key=False, render_mode=None):
         self.possible_agents = ["player_1", "player_2"]
         # left, right, up, down, power_hit, (down_right)
         self.action_spaces = {
-            self.possible_agents[0]: spaces.MultiBinary(6),
+            self.possible_agents[0]: (
+                spaces.MultiBinary(6) if use_f_key else spaces.MultiBinary(5)
+            ),
             self.possible_agents[1]: spaces.MultiBinary(5),
         }
         self._seed()
@@ -108,7 +110,8 @@ class raw_env(ParallelEnv):
         if self.render_mode == "human":
             self.clock = pygame.time.Clock()
 
-        self.get_all_image()
+        if render_mode is not None:
+            self.get_all_image()
 
     def reset(self, seed=None, options=None):
         self.agents = self.possible_agents[:]
@@ -454,7 +457,7 @@ class raw_env(ParallelEnv):
         self.wave_ = Wave()
 
     @functools.lru_cache(maxsize=None)
-    def observation_space(self, agent):
+    def observation_space(self, agent=None):
         # Player1 : x, y, y_velocity, lying_down_duration_left, is_collision_with_ball_happened, state
         # Player2 : x, y, y_velocity, lying_down_duration_left, is_collision_with_ball_happened, state
         # Ball    : x, y, previous_x, previous_y, previous_previous_x, previous_previous_y, x_velocity, y_velocity, is_power_hit
