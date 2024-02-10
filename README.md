@@ -74,11 +74,11 @@ https://github.com/helpingstar/pika-zoo/assets/54899900/b253555e-20bd-4449-bf34-
 | 30    | Previous previous X position of ball         | 32   | 432  |
 | 31    | Previous previous Y position of ball         | 0    | 252  |
 | 32    | X Velocity of ball                           | -20  | 20   |
-| 33    | Y Velocity of ball                           | -inf | inf  |
+| 33    | Y Velocity of ball                           | -124 | 124  |
 | 34    | If the ball is in   POWER HIT status         | 0    | 1    |
 | 35    | Is player 2? (Whether you play on the right.)| 0    | 1    |
 
-I don't know exactly what the maximum and minimum values of the ball's y velocity are, so I used `inf`. The maximum and minimum values I observed are `-123` and `124`.
+Since I do not know the exact minimum and maximum values of the ball's y velocity, I used the minimum and maximum values I observed.
 
 ## Arguments
 
