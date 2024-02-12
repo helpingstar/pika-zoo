@@ -79,16 +79,4 @@ https://github.com/helpingstar/pika-zoo/assets/54899900/b253555e-20bd-4449-bf34-
 | 35    | Is player 2? (Whether you play on the right.)| 0    | 1    |
 
 Since I do not know the exact minimum and maximum values of the ball's y velocity, I used the minimum and maximum values I observed.
-
-## Arguments
-
-```python
-env = pikazoo_v0.env(
-    use_f_key=False,
-)
-```
-
-* `use_f_key` : In the original game, the F key functions to press the down direction (V key) and the right direction key (G key) simultaneously. This is unnecessary from the perspective of reinforcement learning. Considering the symmetry of the game and for vectorizing the environment, it is advisable to set this option to `False`. When this option is set to `False`, the action_space of player1 changes from [`MultiBinary(6)`](https://gymnasium.farama.org/api/spaces/fundamental/#multibinary) to [`MultiBinary(5)`](https://gymnasium.farama.org/api/spaces/fundamental/#multibinary). Related information can be found in the link below.
-  * https://github.com/gorisanson/pikachu-volleyball/issues/3
-
 <!-- TODO: Install, Sample Code -->

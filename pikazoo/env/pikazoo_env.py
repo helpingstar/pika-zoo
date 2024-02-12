@@ -76,7 +76,7 @@ class raw_env(ParallelEnv):
         "render_fps": 20,
     }
 
-    def __init__(self, use_f_key=False, render_mode=None):
+    def __init__(self, render_mode=None):
         self.possible_agents = ["player_1", "player_2"]
         # left, right, up, down, power_hit, (down_right)
         self.agents = self.possible_agents[:]
@@ -87,7 +87,6 @@ class raw_env(ParallelEnv):
                 )
             )
         self._seed()
-        self.use_f_key = use_f_key
         self.physics = PikaPhysics(False, False, self.np_random)
         self.keyboard_array: List[PikaUserInput] = [PikaUserInput(), PikaUserInput()]
         # [0] for player 1 score, [1] for player 2 score
