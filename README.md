@@ -28,14 +28,14 @@ https://github.com/helpingstar/pika-zoo/assets/54899900/b253555e-20bd-4449-bf34-
 
 ## Action Space
 
-| Index | Description                         |
-|-------|-------------------------------------|
-| 0     | left key                            |
-| 1     | right key                           |
-| 2     | up key                              |
-| 3     | down key                            |
-| 4     | power hit key                       |
-| 5     | down rigth key (only for player1)   |
+| Value | Meaning    | Value | Meaning       | Value | Meaning      |
+|-------|------------|-------|---------------|-------|--------------|
+| 0     |`NOOP`      | 1     |`FIRE`         | 2     |`UP`          |
+| 3     |`RIGHT`     | 4     |`LEFT`         | 5     |`DOWN`        |
+| 6     |`UPRIGHT`   | 7     |`UPLEFT`       | 8     |`DOWNRIGHT`   |
+| 9     |`DOWNLEFT`  | 10    |`UPFIRE`       | 11    |`RIGHTFIRE`   |
+| 12    |`LEFTFIRE`  | 13    |`DOWNFIRE`     | 14    |`UPRIGHTFIRE` |
+| 15    |`UPLEFTFIRE`| 16    |`DOWNRIGHTFIRE`| 17    |`DOWNLEFTFIRE`|
 
 ## Observation Space
 
