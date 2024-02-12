@@ -206,9 +206,9 @@ class raw_env(ParallelEnv):
 
         if self.round_ended:
             if self.is_player2_serve:
-                player1_reward = 1
-            else:
                 player1_reward = -1
+            else:
+                player1_reward = 1
         else:
             player1_reward = 0
 
