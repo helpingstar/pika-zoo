@@ -135,6 +135,7 @@ class raw_env(ParallelEnv):
             self.get_all_image()
 
     def reset(self, seed=None, options=None):
+        self.agents = self.possible_agents[:]
         self.game_ended = False
         self.round_ended = False
         self.is_player2_serve = False
@@ -574,7 +575,7 @@ class raw_env(ParallelEnv):
         self.np_random, seed = seeding.np_random(seed)
 
     def _get_infos(self):
-        return {agent: {} for agent in self.agents}
+        return {agent: {"score": self.scores[i]} for i, agent in enumerate(self.agents)}
 
     def _get_obs(self):
         obs1 = np.array(
