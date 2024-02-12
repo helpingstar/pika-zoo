@@ -79,14 +79,15 @@ class raw_env(ParallelEnv):
     def __init__(self, use_f_key=False, render_mode=None):
         self.possible_agents = ["player_1", "player_2"]
         # left, right, up, down, power_hit, (down_right)
-        self.action_spaces = {
-            self.possible_agents[0]: (
-                spaces.MultiBinary(6) if use_f_key else spaces.MultiBinary(5)
-            ),
-            self.possible_agents[1]: spaces.MultiBinary(5),
-        }
+        self.agents = self.possible_agents[:]
+        self.action_spaces = dict(
+                zip(
+                    self.agents,
+                    [spaces.Discrete(18)] * 2,
+                )
+            )
         self._seed()
-
+        self.use_f_key = use_f_key
         self.physics = PikaPhysics(False, False, self.np_random)
         self.keyboard_array: List[PikaUserInput] = [PikaUserInput(), PikaUserInput()]
         # [0] for player 1 score, [1] for player 2 score
@@ -105,7 +106,27 @@ class raw_env(ParallelEnv):
         self.render_mode = render_mode
         self.screen = None
 
-        self._seed()
+        # left, right, up, down, power_hit
+        self.action_key_map = [
+            np.array([0, 0, 0, 0, 0], dtype=np.uint8),  # 0
+            np.array([0, 0, 0, 0, 1], dtype=np.uint8),  # 1
+            np.array([0, 0, 1, 0, 0], dtype=np.uint8),  # 2
+            np.array([0, 1, 0, 0, 0], dtype=np.uint8),  # 3
+            np.array([1, 0, 0, 0, 0], dtype=np.uint8),  # 4
+            np.array([0, 0, 0, 1, 0], dtype=np.uint8),  # 5
+            np.array([0, 1, 1, 0, 0], dtype=np.uint8),  # 6
+            np.array([1, 0, 1, 0, 0], dtype=np.uint8),  # 7
+            np.array([0, 1, 0, 1, 0], dtype=np.uint8),  # 8
+            np.array([1, 0, 0, 1, 0], dtype=np.uint8),  # 9
+            np.array([0, 0, 1, 0, 1], dtype=np.uint8),  # 10
+            np.array([0, 1, 0, 0, 1], dtype=np.uint8),  # 11
+            np.array([1, 0, 0, 0, 1], dtype=np.uint8),  # 12
+            np.array([0, 0, 0, 1, 1], dtype=np.uint8),  # 13
+            np.array([0, 1, 1, 0, 1], dtype=np.uint8),  # 14
+            np.array([1, 0, 1, 0, 1], dtype=np.uint8),  # 15
+            np.array([0, 1, 0, 1, 1], dtype=np.uint8),  # 16
+            np.array([1, 0, 0, 1, 1], dtype=np.uint8),  # 17
+        ]
 
         if self.render_mode == "human":
             self.clock = pygame.time.Clock()
@@ -114,8 +135,6 @@ class raw_env(ParallelEnv):
             self.get_all_image()
 
     def reset(self, seed=None, options=None):
-        self.agents = self.possible_agents[:]
-
         self.game_ended = False
         self.round_ended = False
         self.is_player2_serve = False
@@ -148,6 +167,7 @@ class raw_env(ParallelEnv):
             self.physics.ball.initialize_for_new_round(self.is_player2_serve)
             self.round_ended = False
 
+        actions = {agent: self.action_key_map[actions[agent]] for agent in self.agents}
         for i, agent in enumerate(self.agents):
             self.keyboard_array[i].get_input(actions[agent])
 
