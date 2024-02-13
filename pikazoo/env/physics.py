@@ -1,6 +1,7 @@
 """
 All of the code for pika-zoo was written based on https://github.com/gorisanson/pikachu-volleyball
 """
+
 from typing import List, Dict
 import numpy as np
 from numpy.typing import NDArray
@@ -564,7 +565,7 @@ def process_player_movement_and_set_player_position(
             player.frame_number = (
                 player.frame_number + player.normal_status_arm_swing_direction
             )
-
+    # hs) If player.game_ended == True, the environment terminates immediately, so the code below does not execute.
     if player.game_ended:
         if player.state == 0:
             if player.is_winner:

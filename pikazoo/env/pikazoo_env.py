@@ -81,11 +81,11 @@ class raw_env(ParallelEnv):
         # left, right, up, down, power_hit, (down_right)
         self.agents = self.possible_agents[:]
         self.action_spaces = dict(
-                zip(
-                    self.agents,
-                    [spaces.Discrete(18)] * 2,
-                )
+            zip(
+                self.agents,
+                [spaces.Discrete(18)] * 2,
             )
+        )
         self._seed()
         self.physics = PikaPhysics(False, False, self.np_random)
         self.keyboard_array: List[PikaUserInput] = [PikaUserInput(), PikaUserInput()]
@@ -160,7 +160,6 @@ class raw_env(ParallelEnv):
         return observations, infos
 
     def step(self, actions):
-        # TODO : where...
         if self.round_ended and not self.game_ended:
             self.physics.player1.initialize_for_new_round()
             self.physics.player2.initialize_for_new_round()
@@ -216,6 +215,10 @@ class raw_env(ParallelEnv):
             self.agents[0]: player1_reward,
             self.agents[1]: -player1_reward,
         }
+
+        # hs) If self.game_ended = True, then player.state will be set to 5 or 6 in the next step
+        # by the run_engine_for_next_frame function, but since the environment terminates immediately,
+        # player.state does not become 5 or 6.
         terminations = {agent: self.game_ended for agent in self.agents}
         truncations = {agent: False for agent in self.agents}
         infos = self._get_infos()
@@ -530,8 +533,8 @@ class raw_env(ParallelEnv):
                     16,
                     1,
                     3,
-                    1,
-                    1,
+                    4,
+                    4,
                     1,
                     1,
                     1,
@@ -543,8 +546,8 @@ class raw_env(ParallelEnv):
                     16,
                     1,
                     3,
-                    1,
-                    1,
+                    4,
+                    4,
                     1,
                     1,
                     1,
@@ -578,8 +581,8 @@ class raw_env(ParallelEnv):
 
     def _get_obs(self):
         obs1 = np.array(
-            self._get_player_obs(self.agents[0])
-            + self._get_player_obs(self.agents[1])
+            self._get_player_obs(0)
+            + self._get_player_obs(1)
             + self._get_ball_obs()
             + [0]  # is_player_2
         )
@@ -588,13 +591,14 @@ class raw_env(ParallelEnv):
 
         return {self.agents[0]: obs1, self.agents[1]: obs2}
 
-    def _get_player_obs(self, agent: str):
+    def _get_player_obs(self, idx: int):
+        agent = self.agents[idx]
         player: Player = None
         if agent == self.agents[0]:
             player = self.physics.player1
         else:
             player = self.physics.player2
-        state = [0, 0, 0, 0, 0, 0, 0]
+        state = [0, 0, 0, 0, 0]
         state[player.state] = 1
         return [
             player.x,
@@ -602,7 +606,9 @@ class raw_env(ParallelEnv):
             player.y_velocity,
             player.diving_direction,
             player.lying_down_duration_left,
-            int(player.is_collision_with_ball_happened),
+            player.frame_number,
+            player.delay_before_next_frame,
+            int(self.keyboard_array[idx].power_hit_key_is_down_previous),
         ] + state
 
     def _get_ball_obs(self):
