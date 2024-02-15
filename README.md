@@ -22,9 +22,9 @@ https://github.com/helpingstar/pika-zoo/assets/54899900/b253555e-20bd-4449-bf34-
 | Agents             | agents= ['player_1', 'player_2']         |
 | Agents             | 2                                        |
 | Action Shape       | player_1 : (6,) or (5,), player_2 : (5,) |
-| Action Values      | 0 or 1                                   |
+| Action Values      | Discrete(18)                             |
 | Observation Shape  | (36,)                                    |
-| Observation Values | [-inf,inf]                               |
+| Observation Values | [-124,432]                               |
 
 ## Action Space
 
