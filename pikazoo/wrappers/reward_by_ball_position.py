@@ -3,7 +3,7 @@ from pettingzoo.utils.env import ParallelEnv
 from typing import Set
 
 
-class RewardBasedOnBallPosition(BaseParallelWrapper):
+class RewardByBallPosition(BaseParallelWrapper):
     def __init__(
         self,
         env: ParallelEnv,

@@ -1,2 +1,2 @@
 from pikazoo.wrappers.reward_in_normal_state import RewardInNormalState
-from pikazoo.wrappers.reward_based_on_ball_position import RewardBasedOnBallPosition
+from pikazoo.wrappers.reward_by_ball_position import RewardByBallPosition
