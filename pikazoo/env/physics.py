@@ -316,7 +316,7 @@ def physics_engine(
             the_other_player = player1
 
         # calculate expected x
-        # https://github.com/helpingstar/pika-zoo/pulls/1
+        # https://github.com/helpingstar/pika-zoo/pull/5
         if player1.is_computer or player2.is_computer:
             calculate_expected_landing_point_x_for(ball)
 
@@ -339,7 +339,7 @@ def physics_engine(
                 process_collision_between_ball_and_player(
                     ball, player.x, user_input_array[i], player.state, np_random
                 )
-                # https://github.com/helpingstar/pika-zoo/pulls/1
+                # https://github.com/helpingstar/pika-zoo/pull/5
                 if player1.is_computer or player2.is_computer:
                     calculate_expected_landing_point_x_for(ball)
                 player.is_collision_with_ball_happened = True
@@ -656,7 +656,7 @@ def process_collision_between_ball_and_player(
         ball.is_power_hit = True
     else:
         ball.is_power_hit = False
-    # https://github.com/helpingstar/pika-zoo/pulls/1
+    # https://github.com/helpingstar/pika-zoo/pull/5
     # calculate_expected_landing_point_x_for(ball)
 
 
