@@ -76,7 +76,7 @@ class raw_env(ParallelEnv):
         "render_fps": 20,
     }
 
-    def __init__(self, render_mode=None):
+    def __init__(self, winning_score=15, render_mode=None):
         self.possible_agents = ["player_1", "player_2"]
         # left, right, up, down, power_hit, (down_right)
         self.agents = self.possible_agents[:]
@@ -92,7 +92,7 @@ class raw_env(ParallelEnv):
         # [0] for player 1 score, [1] for player 2 score
         self.scores: List[int] = [0, 0]
         # winning score: if either one of the players reaches this score, game ends
-        self.winning_score: int = 15
+        self.winning_score: int = winning_score
         # Is the game ended?
         self.game_ended: bool = False
         # Is the round ended?

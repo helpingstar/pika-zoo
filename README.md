@@ -79,4 +79,15 @@ https://github.com/helpingstar/pika-zoo/assets/54899900/b253555e-20bd-4449-bf34-
 | 35    | Is player 2? (Whether you play on the right.)       | 0    | 1   |
 
 Since I do not know the exact minimum and maximum values of the ball's y velocity, I used the minimum and maximum values I observed.
+
+## Arguments
+
+```python
+pikazoo_v0.env(
+    winning_score=15,
+)
+```
+
+* `winning_score` : The number of points needed to win a game.
+
 <!-- TODO: Install, Sample Code -->
