@@ -321,7 +321,7 @@ def physics_engine(
             calculate_expected_landing_point_x_for(ball)
 
         process_player_movement_and_set_player_position(
-            player, user_input_array[i], the_other_player, ball
+            player, user_input_array[i], the_other_player, ball, np_random
         )
 
     for i in range(2):
@@ -454,7 +454,11 @@ def process_collision_between_ball_and_world_and_set_ball_position(ball: Ball) -
 
 
 def process_player_movement_and_set_player_position(
-    player: Player, user_input: PikaUserInput, the_other_player: Player, ball: Ball
+    player: Player,
+    user_input: PikaUserInput,
+    the_other_player: Player,
+    ball: Ball,
+    np_random: np.random.Generator,
 ) -> None:
     """Process player movement according to user input and set player position
 
@@ -465,7 +469,9 @@ def process_player_movement_and_set_player_position(
         ball (Ball): ball
     """
     if player.is_computer:
-        let_computer_decide_user_input(player, ball, the_other_player, user_input)
+        let_computer_decide_user_input(
+            player, ball, the_other_player, user_input, np_random
+        )
 
     # if player is lying down.. don't move
     if player.state == 4:
