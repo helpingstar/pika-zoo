@@ -4,6 +4,7 @@ All of the code for pika-zoo was written based on https://github.com/gorisanson/
 hs) For multithreaded optimization and experimental reproducibility, I used a generator for random number extraction.
     As an argument to the class/function, the environment's self.np_random is used as a generator.
 """
+
 import numpy as np
 from typing import List
 
