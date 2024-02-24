@@ -93,9 +93,14 @@ Since I do not know the exact minimum and maximum values of the ball's y velocit
 ```python
 pikazoo_v0.env(
     winning_score=15,
+    is_player1_computer=False,
+    is_player2_computer=False,
 )
 ```
 
 * `winning_score` : The number of points needed to win a game.
+* `is_player1_computer` : If this argument is `True`, player1 (left) will behave as the original game's rull-based AI, and its inputs will be ignored.
+* `is_player2_computer` : If this argument is `True`, player2 (right) will behave as the original game's rull-based AI, and its inputs will be ignored.
+
 
 <!-- TODO: Install, Sample Code -->
