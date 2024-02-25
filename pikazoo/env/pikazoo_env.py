@@ -585,7 +585,7 @@ class raw_env(ParallelEnv):
         self.np_random, seed = seeding.np_random(seed)
 
     def _get_infos(self):
-        return {agent: {"score": self.scores[i]} for i, agent in enumerate(self.agents)}
+        return {agent: {"score": self.scores} for agent in self.agents}
 
     def _get_obs(self):
         obs1 = np.array(
