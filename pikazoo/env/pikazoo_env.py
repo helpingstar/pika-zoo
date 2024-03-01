@@ -93,9 +93,7 @@ class raw_env(ParallelEnv):
             )
         )
         self._seed()
-        self.physics = PikaPhysics(
-            is_player1_computer, is_player2_computer, self.np_random
-        )
+        self.physics = PikaPhysics(is_player1_computer, is_player2_computer, self.np_random)
         self.keyboard_array: List[PikaUserInput] = [PikaUserInput(), PikaUserInput()]
         # [0] for player 1 score, [1] for player 2 score
         self.scores: List[int] = [0, 0]
@@ -178,9 +176,7 @@ class raw_env(ParallelEnv):
         for i, agent in enumerate(self.agents):
             self.keyboard_array[i].get_input(actions[agent])
 
-        is_ball_touching_ground: bool = self.physics.run_engine_for_next_frame(
-            self.keyboard_array
-        )
+        is_ball_touching_ground: bool = self.physics.run_engine_for_next_frame(self.keyboard_array)
 
         # TODO : audio play
 
@@ -247,12 +243,8 @@ class raw_env(ParallelEnv):
         p1: Player = self.physics.player1
         p2: Player = self.physics.player2
 
-        p1_sprite_idx = get_frame_number_for_player_animated_sprite(
-            p1.state, p1.frame_number
-        )
-        p2_sprite_idx = get_frame_number_for_player_animated_sprite(
-            p2.state, p2.frame_number
-        )
+        p1_sprite_idx = get_frame_number_for_player_animated_sprite(p1.state, p1.frame_number)
+        p2_sprite_idx = get_frame_number_for_player_animated_sprite(p2.state, p2.frame_number)
         p1_xflip = (p1.state == 3 or p1.state == 4) and p1.diving_direction == -1
         p2_xflip = not ((p2.state == 3 or p2.state == 4) and p2.diving_direction == 1)
         if p1_xflip:
@@ -275,9 +267,7 @@ class raw_env(ParallelEnv):
         blit_center(self.screen, self.ball[ball.rotation], (ball.x, ball.y))
         blit_center(self.screen, self.shadow, (ball.x, 273))
         if ball.is_power_hit:
-            blit_center(
-                self.screen, self.ball_hyper, (ball.previous_x, ball.previous_y)
-            )
+            blit_center(self.screen, self.ball_hyper, (ball.previous_x, ball.previous_y))
             blit_center(
                 self.screen,
                 self.ball_trail,
@@ -335,9 +325,7 @@ class raw_env(ParallelEnv):
         # player2
         if self.scores[1] >= 10:
             self.screen.blit(self.number[1], (432 - 32 - 32 - 14, 10))
-        self.screen.blit(
-            self.number[self.scores[1] % 10], (432 - 32 - 32 - 14 + 32, 10)
-        )
+        self.screen.blit(self.number[self.scores[1] % 10], (432 - 32 - 32 - 14 + 32, 10))
 
     def draw_clouds_and_wave(self):
         cloud_array = self.cloud_array
@@ -360,9 +348,7 @@ class raw_env(ParallelEnv):
 
     def render(self):
         if self.render_mode is None:
-            gymnasium.logger.warn(
-                "You are calling render method without specifying any render mode."
-            )
+            gymnasium.logger.warn("You are calling render method without specifying any render mode.")
             return
 
         if self.screen is None:
@@ -380,11 +366,7 @@ class raw_env(ParallelEnv):
         if self.render_mode == "human":
             pygame.display.flip()
             self.clock.tick(self.metadata["render_fps"])
-        return (
-            np.transpose(observation, axes=(1, 0, 2))
-            if self.render_mode == "rgb_array"
-            else None
-        )
+        return np.transpose(observation, axes=(1, 0, 2)) if self.render_mode == "rgb_array" else None
 
     def close(self):
         if self.screen is not None:
@@ -414,12 +396,8 @@ class raw_env(ParallelEnv):
         self.game_end = get_image(os.path.join("img", "game_end.png"))
         self.game_start = get_image(os.path.join("img", "game_start.png"))
         self.ground_line = get_image(os.path.join("img", "ground_line.png"))
-        self.ground_line_leftmost = get_image(
-            os.path.join("img", "ground_line_leftmost.png")
-        )
-        self.ground_line_rightmost = get_image(
-            os.path.join("img", "ground_line_rightmost.png")
-        )
+        self.ground_line_leftmost = get_image(os.path.join("img", "ground_line_leftmost.png"))
+        self.ground_line_rightmost = get_image(os.path.join("img", "ground_line_rightmost.png"))
         self.ground_red = get_image(os.path.join("img", "ground_red.png"))
         self.ground_yellow = get_image(os.path.join("img", "ground_yellow.png"))
         self.mark = get_image(os.path.join("img", "mark.png"))
@@ -468,9 +446,7 @@ class raw_env(ParallelEnv):
             get_image(os.path.join("img", "pikachu_6_3.png")),
             get_image(os.path.join("img", "pikachu_6_4.png")),
         )
-        self.pikachu_volleyball = get_image(
-            os.path.join("img", "pikachu_volleyball.png")
-        )
+        self.pikachu_volleyball = get_image(os.path.join("img", "pikachu_volleyball.png"))
         self.pokemon = get_image(os.path.join("img", "pokemon.png"))
         self.ready = get_image(os.path.join("img", "ready.png"))
         self.sachisoft = get_image(os.path.join("img", "sachisoft.png"))
@@ -496,7 +472,7 @@ class raw_env(ParallelEnv):
         return spaces.Box(
             low=np.array(
                 [
-                    PLAYER_HALF_LENGTH,
+                    PLAYER_HALF_LENGTH,  # player
                     108,
                     -15,
                     -1,
@@ -509,7 +485,7 @@ class raw_env(ParallelEnv):
                     0,
                     0,
                     0,
-                    GROUND_HALF_WIDTH + PLAYER_HALF_LENGTH,
+                    PLAYER_HALF_LENGTH,  # opponent player
                     108,
                     -15,
                     -1,
@@ -522,7 +498,7 @@ class raw_env(ParallelEnv):
                     0,
                     0,
                     0,
-                    BALL_RADIUS,
+                    BALL_RADIUS,  # ball
                     0,
                     BALL_RADIUS,
                     0,
@@ -531,12 +507,11 @@ class raw_env(ParallelEnv):
                     -20,
                     -124,
                     0,
-                    0,
                 ]
             ),
             high=np.array(
                 [
-                    GROUND_HALF_WIDTH - PLAYER_HALF_LENGTH,
+                    GROUND_WIDTH - PLAYER_HALF_LENGTH,  # player
                     PLAYER_TOUCHING_GROUND_Y_COORD,
                     16,
                     1,
@@ -549,7 +524,7 @@ class raw_env(ParallelEnv):
                     1,
                     1,
                     1,
-                    GROUND_WIDTH - PLAYER_HALF_LENGTH,
+                    GROUND_WIDTH - PLAYER_HALF_LENGTH,  # opponent player
                     PLAYER_TOUCHING_GROUND_Y_COORD,
                     16,
                     1,
@@ -562,7 +537,7 @@ class raw_env(ParallelEnv):
                     1,
                     1,
                     1,
-                    GROUND_WIDTH,
+                    GROUND_WIDTH,  # ball
                     BALL_TOUCHING_GROUND_Y_COORD,
                     GROUND_WIDTH,
                     BALL_TOUCHING_GROUND_Y_COORD,
@@ -571,10 +546,9 @@ class raw_env(ParallelEnv):
                     20,
                     124,
                     1,
-                    1,
                 ]
             ),
-            shape=(36,),
+            shape=(35,),
             dtype=np.int32,
         )
 
@@ -588,14 +562,11 @@ class raw_env(ParallelEnv):
         return {agent: {"score": self.scores} for agent in self.agents}
 
     def _get_obs(self):
-        obs1 = np.array(
-            self._get_player_obs(0)
-            + self._get_player_obs(1)
-            + self._get_ball_obs()
-            + [0]  # is_player_2
-        )
-        obs2 = obs1.copy()
-        obs2[-1] = 1
+        p1_obs = self._get_player_obs(0)
+        p2_obs = self._get_player_obs(1)
+        ball_obs = self._get_ball_obs()
+        obs1 = np.array(p1_obs + p2_obs + ball_obs)
+        obs2 = np.array(p2_obs + p1_obs + ball_obs)
 
         return {self.agents[0]: obs1, self.agents[1]: obs2}
 
