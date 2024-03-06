@@ -77,16 +77,17 @@ https://github.com/helpingstar/pika-zoo/assets/54899900/b253555e-20bd-4449-bf34-
 | 25 | State of **opponent player** (lying down after diving) | 0 | 1 |
 | 26 | X position of **ball** | 20 | 432 |
 | 27 | Y position of **ball** | 0 | 252 |
-| 28 | Previous X position of **ball** | 32 | 432 |
+| 28 | Previous X position of **ball** | 0 | 432 |
 | 29 | Previous Y position of **ball** | 0 | 252 |
-| 30 | Previous previous X position of **ball** | 32 | 432 |
+| 30 | Previous previous X position of **ball** | 0 | 432 |
 | 31 | Previous previous Y position of **ball** | 0 | 252 |
 | 32 | X Velocity of **ball** | -20 | 20 |
 | 33 | Y Velocity of **ball** | -124 | 124 |
 | 34 | If the **ball** is in POWER HIT status | 0 | 1 |
 
 
-Since I do not know the exact minimum and maximum values of the ball's y velocity, I used the minimum and maximum values I observed.
+* Since I do not know the exact minimum and maximum values of the ball's y velocity, I used the minimum and maximum values I observed.
+* `Previous X position of ball` and `Previous previous X position of ball` have a low value of 0 because they are initialized to 0 at the start of the round.
 
 **Range of x position**
 * player1 : [32, 184]

@@ -500,9 +500,9 @@ class raw_env(ParallelEnv):
                     0,
                     BALL_RADIUS,  # ball
                     0,
-                    BALL_RADIUS,
                     0,
-                    BALL_RADIUS,
+                    0,
+                    0,
                     0,
                     -20,
                     -124,
