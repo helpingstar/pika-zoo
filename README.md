@@ -26,28 +26,28 @@ https://github.com/helpingstar/pika-zoo/assets/54899900/6768208d-8dcd-4e2e-a87c-
 
 
 
-| Import             | `from pikazoo import pikazoo_v0`         |
-|--------------------|------------------------------------------|
-| Actions            | Discrete                                 |
-| Parallel API       | Yes                                      |
-| Manual Control     | No                                       |
-| Agents             | agents= ['player_1', 'player_2']         |
-| Agents             | 2                                        |
-| Action Shape       | (1,)                                     |
-| Action Values      | Discrete(18)                             |
-| Observation Shape  | (35,)                                    |
-| Observation Values | [-124,432]                               |
+| Import | `from pikazoo import pikazoo_v0` |
+|---|---|
+| Actions | Discrete |
+| Parallel API | Yes |
+| Manual Control | No |
+| Agents | agents= ['player_1', 'player_2'] |
+| Agents | 2 |
+| Action Shape | (1,) |
+| Action Values | Discrete(18) |
+| Observation Shape | (35,) |
+| Observation Values | [-124,432] |
 
 ## Action Space
 
-| Value | Meaning    | Value | Meaning       | Value | Meaning      |
-|-------|------------|-------|---------------|-------|--------------|
-| 0     |`NOOP`      | 1     |`FIRE`         | 2     |`UP`          |
-| 3     |`RIGHT`     | 4     |`LEFT`         | 5     |`DOWN`        |
-| 6     |`UPRIGHT`   | 7     |`UPLEFT`       | 8     |`DOWNRIGHT`   |
-| 9     |`DOWNLEFT`  | 10    |`UPFIRE`       | 11    |`RIGHTFIRE`   |
-| 12    |`LEFTFIRE`  | 13    |`DOWNFIRE`     | 14    |`UPRIGHTFIRE` |
-| 15    |`UPLEFTFIRE`| 16    |`DOWNRIGHTFIRE`| 17    |`DOWNLEFTFIRE`|
+| Value | Meaning | Value | Meaning | Value | Meaning |
+|---|---|---|---|---|---|
+| 0 | NOOP | 1 | FIRE | 2 | UP |
+| 3 | RIGHT | 4 | LEFT | 5 | DOWN |
+| 6 | UPRIGHT | 7 | UPLEFT | 8 | DOWNRIGHT |
+| 9 | DOWNLEFT | 10 | UPFIRE | 11 | RIGHTFIRE |
+| 12 | LEFTFIRE | 13 | DOWNFIRE | 14 | UPRIGHTFIRE |
+| 15 | UPLEFTFIRE | 16 | DOWNRIGHTFIRE | 17 | DOWNLEFTFIRE |
 
 ## Observation Space
 
@@ -113,3 +113,22 @@ pikazoo_v0.env(
 
 
 <!-- TODO: Install, Sample Code -->
+
+## Wrappers
+
+### SimplifyAction
+
+Represent actions in relative directions instead of absolute directions, exclude actions that are not meaningful in gameplay, and reduce the number of valid actions from 18 to 13.
+
+| Value | Meaning | Value | Meaning | Value | Meaning |
+|---|---|---|---|---|---|
+| 0 | NOOP | 1 | FIRE | 2 | UP |
+| 3 | FRONT | 4 | BACK | 5 | UPFRONT |
+| 6 | UPBACK | 7 | UPFIRE | 8 | FRONTFIRE |
+| 9 | BACKFIRE | 10 | DOWNFIRE | 11 | UPFRONTFIRE |
+| 12 | DOWNFRONTFIRE |  |  |  |  |
+
+| Relative Direction | Absolute Direction |
+|---|---|
+| FRONT | player_1 : RIGHT<br>player_2 : LEFT |
+| BACK | player_1 : LEFT<br>player_2 : RIGHT |

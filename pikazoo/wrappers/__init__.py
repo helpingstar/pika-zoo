@@ -3,3 +3,4 @@ from pikazoo.wrappers.reward_by_ball_position import RewardByBallPosition
 from pikazoo.wrappers.convert_single_agent import ConvertSingleAgent
 from pikazoo.wrappers.record_episode_statistics import RecordEpisodeStatistics
 from pikazoo.wrappers.normalize_observation import NormalizeObservation
+from pikazoo.wrappers.simplify_action import SimplifyAction
