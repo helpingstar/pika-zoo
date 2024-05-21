@@ -132,3 +132,23 @@ Represent actions in relative directions instead of absolute directions, exclude
 |---|---|
 | FRONT | player_1 : RIGHT<br>player_2 : LEFT |
 | BACK | player_1 : LEFT<br>player_2 : RIGHT |
+
+
+### RewardByBallPosition
+
+```
+[20, x_line) [x_line, 432]
+          x_line
+        ┌───┼───┬→
+        │ 0 │ 2 │ [0, y_line]
+        ├───┼───┼─ y_line 
+        │ 1 │ 3 │ (y_line, 252]
+        ├───┴───┘
+        ↓
+```
+
+* **Argument**
+  * `additional_reward` : When the ball is in zone n, player_1 gets the value at index n, and player_2 gets the reward at index n+4.
+  * `x_line` : The line separating the x-coordinates
+  * `y_line` : The line separating the y-coordinates
+    
