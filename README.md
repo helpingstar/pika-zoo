@@ -102,12 +102,17 @@ https://github.com/helpingstar/pika-zoo/assets/54899900/6768208d-8dcd-4e2e-a87c-
 ```python
 pikazoo_v0.env(
     winning_score=15,
+    serve="winner",
     is_player1_computer=False,
     is_player2_computer=False,
 )
 ```
 
 * `winning_score` : The number of points needed to win a game.
+* `serve` : The method to determine the player to serve
+  * `winner` : The winner of the previous round serves.
+  * `alternate` : The two players alternate serving each round.
+  * `random` : The player to serve is determined randomly.
 * `is_player1_computer` : If this argument is `True`, player1 (left) will behave as the original game's rull-based AI, and its inputs will be ignored.
 * `is_player2_computer` : If this argument is `True`, player2 (right) will behave as the original game's rull-based AI, and its inputs will be ignored.
 
