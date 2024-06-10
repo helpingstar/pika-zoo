@@ -79,6 +79,7 @@ class raw_env(ParallelEnv):
     def __init__(
         self,
         winning_score=15,
+        serve="winner",
         is_player1_computer=False,
         is_player2_computer=False,
         render_mode=None,
@@ -99,6 +100,9 @@ class raw_env(ParallelEnv):
         self.scores: List[int] = [0, 0]
         # winning score: if either one of the players reaches this score, game ends
         self.winning_score: int = winning_score
+        # winner / alternate / random
+        assert serve in ("winner", "alternate", "random")
+        self.serve = serve
         # Is the game ended?
         self.game_ended: bool = False
         # Is the round ended?
@@ -154,7 +158,7 @@ class raw_env(ParallelEnv):
 
         self.physics.player1.initialize_for_new_round()
         self.physics.player2.initialize_for_new_round()
-        self.physics.ball.initialize_for_new_round(self.is_player2_serve)
+        self.physics.ball.initialize_for_new_round(self.get_server())
 
         # TODO : audio play
 
@@ -169,7 +173,7 @@ class raw_env(ParallelEnv):
         if self.round_ended and not self.game_ended:
             self.physics.player1.initialize_for_new_round()
             self.physics.player2.initialize_for_new_round()
-            self.physics.ball.initialize_for_new_round(self.is_player2_serve)
+            self.physics.ball.initialize_for_new_round(self.get_server())
             self.round_ended = False
 
         actions = {agent: self.action_key_map[actions[agent]] for agent in self.agents}
@@ -231,6 +235,14 @@ class raw_env(ParallelEnv):
             self.agents = []
 
         return observations, rewards, terminations, truncations, infos
+
+    def get_server(self):
+        if self.serve == "winner":
+            return self.is_player2_serve
+        elif self.serve == "random":
+            return self.np_random.integers(0, 2) == 0
+        else:  # alternate
+            return (self.scores[0] + self.scores[1]) % 2 == 1
 
     def draw(self):
         self.draw_background()
