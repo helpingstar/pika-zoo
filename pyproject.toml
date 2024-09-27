@@ -1,0 +1,68 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+    "setuptools>=61.0",
+]
+
+[project]
+authors = [
+    { email = "iamhelpingstar@gmail.com", name = "Wooseong Park" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "numpy>=1.21.0",
+    "pettingzoo>=1.23.0",
+    "gymnasium>=0.28.0",
+    "moviepy>=1.0.0",
+    "pygame>=2.3.0",
+]
+description = "Multi-agent RL environment for a pikachu-volleyball game based on Pettingzoo."
+dynamic = [
+    "version",
+]
+keywords = [
+    "RL-environment",
+    "Pikachu Volleyball",
+    "game-ai",
+    "machine-learning",
+    "reinforcement learning",
+]
+name = "pika-zoo"
+readme = "README.md"
+requires-python = ">=3.10"
+
+[project.license]
+file = "LICENSE"
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.1.6",
+]
+
+[project.urls]
+Homepage = "https://github.com/helpingstar/pika-zoo"
+Issues = "https://github.com/helpingstar/pika-zoo/issues"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+ignore = [
+    "F401",
+]
+
+[tool.setuptools.dynamic.version]
+attr = "pikazoo.__version__"
