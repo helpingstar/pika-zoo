@@ -50,9 +50,7 @@ class Wave:
             self.y_coords.append(314)
 
 
-def cloud_and_wave_engine(
-    cloud_array: List[Cloud], wave: Wave, np_random: np.random.Generator
-):
+def cloud_and_wave_engine(cloud_array: List[Cloud], wave: Wave, np_random: np.random.Generator):
     """Move clouds and wave
 
     Args:
@@ -66,9 +64,7 @@ def cloud_and_wave_engine(
             cloud_array[i].top_left_point_x = -68
             cloud_array[i].top_left_point_y = np_random.integers(0, 152)
             cloud_array[i].top_left_point_x_velocity = 1 + np_random.integers(0, 2)
-        cloud_array[i].size_diff_turn_number = (
-            cloud_array[i].size_diff_turn_number + 1
-        ) % 11
+        cloud_array[i].size_diff_turn_number = (cloud_array[i].size_diff_turn_number + 1) % 11
 
     wave.vertical_coord += wave.vertical_coord_velocity
     if wave.vertical_coord > 32:

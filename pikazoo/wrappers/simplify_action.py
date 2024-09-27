@@ -19,16 +19,9 @@ class SimplifyAction(BaseParallelWrapper):
         }
         self.action_spaces = dict(zip(self.possible_agents, [spaces.Discrete(13)] * 2))
 
-    def step(
-        self, actions: dict
-    ) -> tuple[
-        dict, dict[Any, float], dict[Any, bool], dict[Any, bool], dict[Any, dict]
-    ]:
+    def step(self, actions: dict) -> tuple[dict, dict[Any, float], dict[Any, bool], dict[Any, bool], dict[Any, dict]]:
         """Map the actions to the original environment's actions."""
-        actions = {
-            agent: self.action_map[agent][actions[agent]]
-            for agent in self.possible_agents
-        }
+        actions = {agent: self.action_map[agent][actions[agent]] for agent in self.possible_agents}
         return super().step(actions)
 
     def action_space(self, agent: Any) -> spaces.Space:

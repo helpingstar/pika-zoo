@@ -79,9 +79,7 @@ class PikaUserInput:
 
         if self.left_key:
             self.x_direction = -1
-        elif self.right_key or (
-            self.down_right_key is not None and self.down_right_key
-        ):
+        elif self.right_key or (self.down_right_key is not None and self.down_right_key):
             self.x_direction = 1
         else:
             self.x_direction = 0
@@ -142,9 +140,7 @@ class PikaPhysics:
 class Player:
     """Class representing a player"""
 
-    def __init__(
-        self, is_player2: bool, is_computer: bool, np_random: np.random.Generator
-    ):
+    def __init__(self, is_player2: bool, is_computer: bool, np_random: np.random.Generator):
         """create a player
 
         Args:
@@ -301,9 +297,7 @@ def physics_engine(
     Returns:
         bool: Is ball touching ground?
     """
-    is_ball_touching_ground: bool = (
-        process_collision_between_ball_and_world_and_set_ball_position(ball)
-    )
+    is_ball_touching_ground: bool = process_collision_between_ball_and_world_and_set_ball_position(ball)
 
     player = None
     the_other_player = None
@@ -320,9 +314,7 @@ def physics_engine(
         if player1.is_computer or player2.is_computer:
             calculate_expected_landing_point_x_for(ball)
 
-        process_player_movement_and_set_player_position(
-            player, user_input_array[i], the_other_player, ball, np_random
-        )
+        process_player_movement_and_set_player_position(player, user_input_array[i], the_other_player, ball, np_random)
 
     for i in range(2):
         if i == 0:
@@ -330,15 +322,11 @@ def physics_engine(
         else:
             player = player2
 
-        is_happened: bool = is_collision_between_ball_and_player_happened(
-            ball, player.x, player.y
-        )
+        is_happened: bool = is_collision_between_ball_and_player_happened(ball, player.x, player.y)
 
         if is_happened:
             if not player.is_collision_with_ball_happened:
-                process_collision_between_ball_and_player(
-                    ball, player.x, user_input_array[i], player.state, np_random
-                )
+                process_collision_between_ball_and_player(ball, player.x, user_input_array[i], player.state, np_random)
                 # https://github.com/helpingstar/pika-zoo/pull/5
                 if player1.is_computer or player2.is_computer:
                     calculate_expected_landing_point_x_for(ball)
@@ -349,9 +337,7 @@ def physics_engine(
     return is_ball_touching_ground
 
 
-def is_collision_between_ball_and_player_happened(
-    ball: Ball, player_x: int, player_y: int
-) -> bool:
+def is_collision_between_ball_and_player_happened(ball: Ball, player_x: int, player_y: int) -> bool:
     """Is collision between ball and player happened?
 
     Args:
@@ -422,10 +408,7 @@ def process_collision_between_ball_and_world_and_set_ball_position(ball: Ball) -
     if future_ball_y < 0:
         ball.y_velocity = 1
 
-    if (
-        abs(ball.x - GROUND_HALF_WIDTH) < NET_PILLAR_HALF_WIDTH
-        and ball.y > NET_PILLAR_TOP_TOP_Y_COORD
-    ):
+    if abs(ball.x - GROUND_HALF_WIDTH) < NET_PILLAR_HALF_WIDTH and ball.y > NET_PILLAR_TOP_TOP_Y_COORD:
         if ball.y <= NET_PILLAR_TOP_BOTTOM_Y_COORD:
             if ball.y_velocity > 0:
                 ball.y_velocity = -ball.y_velocity
@@ -469,9 +452,7 @@ def process_player_movement_and_set_player_position(
         ball (Ball): ball
     """
     if player.is_computer:
-        let_computer_decide_user_input(
-            player, ball, the_other_player, user_input, np_random
-        )
+        let_computer_decide_user_input(player, ball, the_other_player, user_input, np_random)
 
     # if player is lying down.. don't move
     if player.state == 4:
@@ -510,8 +491,7 @@ def process_player_movement_and_set_player_position(
     if (
         player.state < 3
         and user_input.y_direction == -1  # up-direction input
-        and player.y
-        == PLAYER_TOUCHING_GROUND_Y_COORD  # player is touching on the ground
+        and player.y == PLAYER_TOUCHING_GROUND_Y_COORD  # player is touching on the ground
     ):
         player.y_velocity = -16
         player.state = 1
@@ -566,16 +546,10 @@ def process_player_movement_and_set_player_position(
         player.delay_before_next_frame += 1
         if player.delay_before_next_frame > 3:
             player.delay_before_next_frame = 0
-            future_frame_number: int = (
-                player.frame_number + player.normal_status_arm_swing_direction
-            )
+            future_frame_number: int = player.frame_number + player.normal_status_arm_swing_direction
             if future_frame_number < 0 or future_frame_number > 4:
-                player.normal_status_arm_swing_direction = (
-                    -player.normal_status_arm_swing_direction
-                )
-            player.frame_number = (
-                player.frame_number + player.normal_status_arm_swing_direction
-            )
+                player.normal_status_arm_swing_direction = -player.normal_status_arm_swing_direction
+            player.frame_number = player.frame_number + player.normal_status_arm_swing_direction
     # hs) If player.game_ended == True, the environment terminates immediately, so the code below does not execute.
     if player.game_ended:
         if player.state == 0:
@@ -630,7 +604,7 @@ def process_collision_between_ball_and_player(
     greater the x velocity of the ball
     """
     if ball.x < player_x:
-        ball.x_velocity = -((abs(ball.x - player_x) // 3))
+        ball.x_velocity = -(abs(ball.x - player_x) // 3)
     elif ball.x > player_x:
         ball.x_velocity = abs(ball.x - player_x) // 3
 
@@ -704,10 +678,7 @@ def calculate_expected_landing_point_x_for(ball: Ball):
 
         copy_ball["y"] = copy_ball["y"] + copy_ball["y_velocity"]
         # if copy_ball would touch ground
-        if (
-            copy_ball["y"] > BALL_TOUCHING_GROUND_Y_COORD
-            or loop_counter >= INFINITE_LOOP_LIMIT
-        ):
+        if copy_ball["y"] > BALL_TOUCHING_GROUND_Y_COORD or loop_counter >= INFINITE_LOOP_LIMIT:
             break
 
         copy_ball["x"] = copy_ball["x"] + copy_ball["x_velocity"]
@@ -740,15 +711,11 @@ def let_computer_decide_user_input(
     user_input.power_hit = 0
 
     virtual_expected_landing_point_x = ball.expected_landing_point_x
-    if (
-        abs(ball.x - player.x) > 100
-        and abs(ball.x_velocity) < player.computer_boldness + 5
-    ):
+    if abs(ball.x - player.x) > 100 and abs(ball.x_velocity) < player.computer_boldness + 5:
         left_boundary: int = int(player.is_player2) * GROUND_HALF_WIDTH
         if (
             ball.expected_landing_point_x <= left_boundary
-            or ball.expected_landing_point_x
-            >= int(player.is_player2) * GROUND_WIDTH + GROUND_HALF_WIDTH
+            or ball.expected_landing_point_x >= int(player.is_player2) * GROUND_WIDTH + GROUND_HALF_WIDTH
         ) and player.computer_where_to_stand_by == 0:
             # If conditions above met, the computer estimates the proper location to stay as the middle point of their side
             virtual_expected_landing_point_x = left_boundary + (GROUND_HALF_WIDTH // 2)
@@ -800,10 +767,7 @@ def let_computer_decide_user_input(
             )
             if will_input_power_hit:
                 user_input.power_hit = 1
-                if (
-                    abs(the_other_player.x - player.x) < 80
-                    and user_input.y_direction != -1
-                ):
+                if abs(the_other_player.x - player.x) < 80 and user_input.y_direction != -1:
                     user_input.y_direction = -1
 
 
@@ -831,34 +795,22 @@ def decide_whether_input_power_hit(
     if np_random.integers(0, 2) == 0:
         for x_direction in range(1, -1, -1):
             for y_direction in range(-1, 2, 1):
-                expected_landing_point_x: int = expected_landing_point_x_when_power_hit(
-                    x_direction, y_direction, ball
-                )
+                expected_landing_point_x: int = expected_landing_point_x_when_power_hit(x_direction, y_direction, ball)
                 if (
-                    expected_landing_point_x
-                    <= int(player.is_player2) * GROUND_HALF_WIDTH
-                    or expected_landing_point_x
-                    >= int(player.is_player2) * GROUND_WIDTH + GROUND_HALF_WIDTH
-                ) and abs(
-                    expected_landing_point_x - the_other_player.x
-                ) > PLAYER_LENGTH:
+                    expected_landing_point_x <= int(player.is_player2) * GROUND_HALF_WIDTH
+                    or expected_landing_point_x >= int(player.is_player2) * GROUND_WIDTH + GROUND_HALF_WIDTH
+                ) and abs(expected_landing_point_x - the_other_player.x) > PLAYER_LENGTH:
                     user_input.x_direction = x_direction
                     user_input.y_direction = y_direction
                     return True
     else:
         for x_direction in range(1, -1, -1):
             for y_direction in range(1, -2, -1):
-                expected_landing_point_x = expected_landing_point_x_when_power_hit(
-                    x_direction, y_direction, ball
-                )
+                expected_landing_point_x = expected_landing_point_x_when_power_hit(x_direction, y_direction, ball)
                 if (
-                    expected_landing_point_x
-                    <= int(player.is_player2) * GROUND_HALF_WIDTH
-                    or expected_landing_point_x
-                    >= int(player.is_player2) * GROUND_WIDTH + GROUND_HALF_WIDTH
-                ) and abs(
-                    expected_landing_point_x - the_other_player.x
-                ) > PLAYER_LENGTH:
+                    expected_landing_point_x <= int(player.is_player2) * GROUND_HALF_WIDTH
+                    or expected_landing_point_x >= int(player.is_player2) * GROUND_WIDTH + GROUND_HALF_WIDTH
+                ) and abs(expected_landing_point_x - the_other_player.x) > PLAYER_LENGTH:
                     user_input.x_direction = x_direction
                     user_input.y_direction = y_direction
                     return True
@@ -926,10 +878,7 @@ def expected_landing_point_x_when_power_hit(
             """
 
         copy_ball["y"] = copy_ball["y"] + copy_ball["y_velocity"]
-        if (
-            copy_ball["y"] > BALL_TOUCHING_GROUND_Y_COORD
-            or loop_counter >= INFINITE_LOOP_LIMIT
-        ):
+        if copy_ball["y"] > BALL_TOUCHING_GROUND_Y_COORD or loop_counter >= INFINITE_LOOP_LIMIT:
             return copy_ball["x"]
         copy_ball["x"] = copy_ball["x"] + copy_ball["x_velocity"]
         copy_ball["y_velocity"] += 1
