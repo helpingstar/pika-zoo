@@ -60,12 +60,12 @@ https://github.com/helpingstar/pika-zoo/assets/54899900/6768208d-8dcd-4e2e-a87c-
 | 4 | **Player**'s remaining duration of lying down | -2 | 3 |
 | 5 | **Player**'s frame number | 0 | 4 |
 | 6 | **Player**'s delay_before_next_frame | 0 | 4 |
-| 7 | Whether **player**'s power hit key was down previously | 0 | 1 |
-| 8 | State of **player** (normal) | 0 | 1 |
-| 9 | State of **player** (jumping) | 0 | 1 |
-| 10 | State of **player** (jumping and power hitting) | 0 | 1 |
-| 11 | State of **player** (diving) | 0 | 1 |
-| 12 | State of **player** (lying down after diving) | 0 | 1 |
+| 7 | State of **player** (normal) | 0 | 1 |
+| 8 | State of **player** (jumping) | 0 | 1 |
+| 9 | State of **player** (jumping and power hitting) | 0 | 1 |
+| 10 | State of **player** (diving) | 0 | 1 |
+| 11 | State of **player** (lying down after diving) | 0 | 1 |
+| 12 | Whether **player**'s power hit key was down previously | 0 | 1 |
 | 13 | X position of **opponent player** | 32 | 400 |
 | 14 | Y position of **opponent player** | 108 | 244 |
 | 15 | Y Velocity of **opponent player** | -15 | 16 |
@@ -73,12 +73,12 @@ https://github.com/helpingstar/pika-zoo/assets/54899900/6768208d-8dcd-4e2e-a87c-
 | 17 | **Opponent player**'s remaining duration of lying down | -2 | 3 |
 | 18 | **Opponent player**'s frame number | 0 | 4 |
 | 19 | **Opponent player**'s delay_before_next_frame | 0 | 4 |
-| 20 | Whether **opponent player**'s power hit key was down previously | 0 | 1 |
-| 21 | State of **opponent player** (normal) | 0 | 1 |
-| 22 | State of **opponent player** (jumping) | 0 | 1 |
-| 23 | State of **opponent player** (jumping and power hitting) | 0 | 1 |
-| 24 | State of **opponent player** (diving) | 0 | 1 |
-| 25 | State of **opponent player** (lying down after diving) | 0 | 1 |
+| 20 | State of **opponent player** (normal) | 0 | 1 |
+| 21 | State of **opponent player** (jumping) | 0 | 1 |
+| 22 | State of **opponent player** (jumping and power hitting) | 0 | 1 |
+| 23 | State of **opponent player** (diving) | 0 | 1 |
+| 24 | State of **opponent player** (lying down after diving) | 0 | 1 |
+| 25 | Whether **opponent player**'s power hit key was down previously | 0 | 1 |
 | 26 | X position of **ball** | 20 | 432 |
 | 27 | Y position of **ball** | 0 | 252 |
 | 28 | Previous X position of **ball** | 0 | 432 |
