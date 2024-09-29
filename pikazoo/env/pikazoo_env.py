@@ -115,27 +115,30 @@ class raw_env(ParallelEnv):
         self.render_mode = render_mode
         self.screen = None
 
-        # left, right, up, down, power_hit
-        self.action_key_map = [
-            np.array([0, 0, 0, 0, 0], dtype=np.uint8),  # 0
-            np.array([0, 0, 0, 0, 1], dtype=np.uint8),  # 1
-            np.array([0, 0, 1, 0, 0], dtype=np.uint8),  # 2
-            np.array([0, 1, 0, 0, 0], dtype=np.uint8),  # 3
-            np.array([1, 0, 0, 0, 0], dtype=np.uint8),  # 4
-            np.array([0, 0, 0, 1, 0], dtype=np.uint8),  # 5
-            np.array([0, 1, 1, 0, 0], dtype=np.uint8),  # 6
-            np.array([1, 0, 1, 0, 0], dtype=np.uint8),  # 7
-            np.array([0, 1, 0, 1, 0], dtype=np.uint8),  # 8
-            np.array([1, 0, 0, 1, 0], dtype=np.uint8),  # 9
-            np.array([0, 0, 1, 0, 1], dtype=np.uint8),  # 10
-            np.array([0, 1, 0, 0, 1], dtype=np.uint8),  # 11
-            np.array([1, 0, 0, 0, 1], dtype=np.uint8),  # 12
-            np.array([0, 0, 0, 1, 1], dtype=np.uint8),  # 13
-            np.array([0, 1, 1, 0, 1], dtype=np.uint8),  # 14
-            np.array([1, 0, 1, 0, 1], dtype=np.uint8),  # 15
-            np.array([0, 1, 0, 1, 1], dtype=np.uint8),  # 16
-            np.array([1, 0, 0, 1, 1], dtype=np.uint8),  # 17
-        ]
+        # [left, right, up, down, power_hit]
+        self.action_key_map = np.array(
+            [
+                [0, 0, 0, 0, 0],  # 0
+                [0, 0, 0, 0, 1],  # 1
+                [0, 0, 1, 0, 0],  # 2
+                [0, 1, 0, 0, 0],  # 3
+                [1, 0, 0, 0, 0],  # 4
+                [0, 0, 0, 1, 0],  # 5
+                [0, 1, 1, 0, 0],  # 6
+                [1, 0, 1, 0, 0],  # 7
+                [0, 1, 0, 1, 0],  # 8
+                [1, 0, 0, 1, 0],  # 9
+                [0, 0, 1, 0, 1],  # 10
+                [0, 1, 0, 0, 1],  # 11
+                [1, 0, 0, 0, 1],  # 12
+                [0, 0, 0, 1, 1],  # 13
+                [0, 1, 1, 0, 1],  # 14
+                [1, 0, 1, 0, 1],  # 15
+                [0, 1, 0, 1, 1],  # 16
+                [1, 0, 0, 1, 1],  # 17
+            ],
+            dtype=np.uint8,
+        )
 
         if self.render_mode == "human":
             self.clock = pygame.time.Clock()
