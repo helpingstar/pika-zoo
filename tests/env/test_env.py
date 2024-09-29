@@ -8,9 +8,7 @@ def test_env_observation_symmetry():
     env = pikazoo_v0.env(winning_score=15, is_player1_computer=True, is_player2_computer=True, render_mode=None)
     observations, infos = env.reset()
     observation_divide_and_assert(observations)
-    # assert
     while env.agents:
-        print(observations)
         actions = {agent: 0 for agent in env.agents}
         observations, rewards, terminations, truncations, infos = env.step(actions)
         observation_divide_and_assert(observations)
