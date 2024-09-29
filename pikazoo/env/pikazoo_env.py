@@ -477,9 +477,6 @@ class raw_env(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent=None):
-        # Player1 : x, y, y_velocity, diving_direction, lying_down_duration_left, is_collision_with_ball_happened, state
-        # Player2 : x, y, y_velocity, diving_direction, lying_down_duration_left, is_collision_with_ball_happened, state
-        # Ball    : x, y, previous_x, previous_y, previous_previous_x, previous_previous_y, x_velocity, y_velocity, is_power_hit
         # hs) 108 : The maximum height reachable by the player.
         return spaces.Box(
             low=np.array(
@@ -574,21 +571,20 @@ class raw_env(ParallelEnv):
         return {agent: {"score": self.scores} for agent in self.agents}
 
     def _get_obs(self):
-        p1_obs = self._get_player_obs(0)
-        p2_obs = self._get_player_obs(1)
+        # p1_obs = self._get_player_obs(0)
+        p1_obs = self._get_player_info(self.physics.player1) + [
+            int(self.keyboard_array[0].power_hit_key_is_down_previous)
+        ]
+        p2_obs = self._get_player_info(self.physics.player2) + [
+            int(self.keyboard_array[1].power_hit_key_is_down_previous)
+        ]
         ball_obs = self._get_ball_obs()
         obs1 = np.array(p1_obs + p2_obs + ball_obs)
         obs2 = np.array(p2_obs + p1_obs + ball_obs)
 
         return {self.agents[0]: obs1, self.agents[1]: obs2}
 
-    def _get_player_obs(self, idx: int):
-        agent = self.agents[idx]
-        player: Player = None
-        if agent == self.agents[0]:
-            player = self.physics.player1
-        else:
-            player = self.physics.player2
+    def _get_player_info(self, player: Player):
         state = [0, 0, 0, 0, 0]
         state[player.state] = 1
         return [
@@ -599,7 +595,6 @@ class raw_env(ParallelEnv):
             player.lying_down_duration_left,
             player.frame_number,
             player.delay_before_next_frame,
-            int(self.keyboard_array[idx].power_hit_key_is_down_previous),
         ] + state
 
     def _get_ball_obs(self):
